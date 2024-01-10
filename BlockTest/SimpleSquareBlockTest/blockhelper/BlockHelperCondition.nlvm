@@ -1,0 +1,96 @@
+package blockhelper;
+
+import com.nolimitscoaster.*;
+
+
+/**
+ * Helper class for simplifying implementation of block scripts
+ */
+public class BlockHelperCondition
+{
+
+  BlockHelperCondition(int type, Object object, double param, bool canPrepare)
+  {
+    _type = type;
+    _object = object;
+    _param = param;
+    _canPrepare = canPrepare;
+  }
+  
+  bool isTrue(bool prepare, bool activeSwitch)
+  {
+    switch (_type)
+    {
+    case CONDITION_BLOCK_FREE:
+      {
+        Block block = (Block)_object;
+        
+        return BlockHelper.STATE_BLOCK_FREE == block.getState();
+      }
+      
+    case CONDITION_CHANGE_SWITCH:
+      {
+        SpecialTrack track = (SpecialTrack)_object;
+        if (activeSwitch && (!prepare || _canPrepare))
+        {
+          track.setSwitchDirection((int)_param);
+        }
+        return track.getSwitchDirection() == (int)_param;        
+      }
+      
+    case CONDITION_WAIT:
+      if (prepare)
+      {
+        return true;
+      }
+      if (_sumTime >= _param)
+      {
+        return true; 
+      }
+      _sumTime += NoLimits.getSimulator().getCurSimulationTickSec();
+      return false;
+    }
+    return false;
+  }
+  
+  void acknoledge(bool backwards)
+  {
+    switch (_type)
+    {
+    case CONDITION_BLOCK_FREE:
+      {
+        Block block = (Block)_object;
+        
+        block.setState(backwards ? BlockHelper.STATE_BLOCK_APPROACHING_BWD : BlockHelper.STATE_BLOCK_APPROACHING);
+      }
+      break;
+    case CONDITION_WAIT:
+      // reset timer
+      _sumTime = 0;
+      break;
+    }    
+  }
+  
+  Block queryBlock()
+  {
+    if (_object instanceof Block)
+    {
+      return (Block)_object; 
+    }
+    return null;
+  }
+  
+  static final int CONDITION_BLOCK_FREE = 0;
+  static final int CONDITION_CHANGE_SWITCH = 1;
+  static final int CONDITION_IS_SWITCH = 2;
+  static final int CONDITION_WAIT = 3;
+  
+  private int _type;
+  private Object _object;
+  private double _param;
+  
+  private bool _canPrepare;
+  
+  private double _sumTime;
+}
+

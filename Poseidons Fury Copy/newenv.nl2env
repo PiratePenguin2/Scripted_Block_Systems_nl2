@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <environment>
+    <description>Default environment with dynamic skybox and dynamic clouds</description>
+    <preview>base:data/environments/default/preview.jpg</preview>
+    <skybox upperhalf="false" compatmode="false">
+      <up>CloudySpringDaySkybox_Top.bmp</up>
+      <down>CloudySpringDaySkybox_Bottom.bmp</down>
+      <north>CloudySpringDaySkybox_Back.bmp</north>
+      <east>CloudySpringDaySkybox_Left.bmp</east>
+      <south>CloudySpringDaySkybox_Front.bmp</south>
+      <west>CloudySpringDaySkybox_Right.bmp</west>
+    </skybox>
+    <sun render="true">
+      <position azimuth="40" elevation="60"/>
+      <diffusecolor r="1" g="0.937255" b="0.854902" a="1"/>
+      <ambientcolor r="0.45098" g="0.470588" b="0.564706" a="1"/>
+      <specularcolor r="1" g="1" b="1" a="1"/>
+    </sun>
+    <moon render="false" state="0.2" intensity="1" rotation="0">
+      <position azimuth="290" elevation="25"/>
+    </moon>
+    <weather>
+      <wind azimuth="135" speed="4"/>
+      <sky overcast="1"/>
+      <fog density="0.0003"/>
+      <fogcolor r="0.745098" g="0.894118" b="0.964706" a="1"/>
+      <dynamicclouds coverage="0.3"/>
+    </weather>
+    <clouds>
+      <layer1 scale="0.4" scroll="0.0008">intern:data/textures/clouds/clouds1.png</layer1>
+      <layer2 scale="0.5" scroll="0.001">intern:data/textures/clouds/clouds2.png</layer2>
+    </clouds>
+    <background minheight="1" maxheight="1000" perlinsize="4000.01" perlinpersistence="0.55" perlinoffsetx="0" perlinoffsetz="0" innerfadeslope="0" outerfadeslope="0">
+      <layer coverage="1" minheight="0" maxheight="0" minslope="0" maxslope="90" noise="0.1" noisedetail="1">
+        <texture repeats="1"></texture>
+      </layer>
+    </background>
+    <bgplant intensity="0">intern:data/objects/background/Maple Tree.nl2bgp</bgplant>
+    <bgplant intensity="0">intern:data/objects/background/Maple Tree.nl2bgp</bgplant>
+    <bgplant intensity="0">intern:data/objects/background/Pine Tree.nl2bgp</bgplant>
+    <scriptfile>intern:data/scripts/Ambient Sounds.nl2script</scriptfile>
+  </environment>
+</root>

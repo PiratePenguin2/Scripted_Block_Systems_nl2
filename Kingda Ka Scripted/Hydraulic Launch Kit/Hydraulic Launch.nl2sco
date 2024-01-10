@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="Hydraulic.dae"/>
+    <description>A Modular Hydraulic Launch Kit</description>
+    <preview>Icon.png</preview>
+    <usercolor>
+      <label>Track Colour</label>
+      <defaultcolor r="0.85098" g="0" b="0"/>
+    </usercolor>
+    <usercolor>
+      <label>Catch Car Colour</label>
+      <defaultcolor r="0.717647" g="0.368627" b="0.301961"/>
+    </usercolor>
+    <script>
+      <classpath></classpath>
+      <class>Chain</class>
+      <sharedvm>true</sharedvm>
+    </script>
+    <materialpath name="Box">Box.nl2mat</materialpath>
+    <materialpath name="Brakes_001">Fins.nl2mat</materialpath>
+    <materialpath name="CatchCar">catchcar.nl2mat</materialpath>
+    <materialpath name="Details">colour.nl2mat</materialpath>
+    <materialpath name="Grase">colour.nl2mat</materialpath>
+    <materialpath name="MEtal2_001">bed.nl2mat</materialpath>
+    <materialpath name="Material_000">colour.nl2mat</materialpath>
+    <materialpath name="Material_001">Polyurathane.nl2mat</materialpath>
+    <materialpath name="Metal_001">track.nl2mat</materialpath>
+    <materialpath name="Metal_002">track.nl2mat</materialpath>
+    <materialpath name="Red">Red.nl2mat</materialpath>
+    <materialpath name="Shiny_001">colour.nl2mat</materialpath>
+    <materialpath name="Shiny_002">Cable.nl2mat</materialpath>
+  </sceneobject>
+</root>

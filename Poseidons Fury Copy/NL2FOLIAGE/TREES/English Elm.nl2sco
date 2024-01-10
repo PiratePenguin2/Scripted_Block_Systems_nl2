@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/EnglishElm.dae"/>
+    <description>Stylized elm tree</description>
+    <preview>TEXTURES/EnglishElm/elmicon.jpg</preview>
+    <param randomroty="true"/>
+    <param randomrotvariationy="180"/>
+    <param basescalex="1.25"/>
+    <param basescaley="1.25"/>
+    <param basescalez="1.25"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.2"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.2"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.2"/>
+    <param lockonterrain="true"/>
+    <materialpath name="Trees4">TEXTURES/EnglishElm.nl2mat</materialpath>
+  </sceneobject>
+</root>

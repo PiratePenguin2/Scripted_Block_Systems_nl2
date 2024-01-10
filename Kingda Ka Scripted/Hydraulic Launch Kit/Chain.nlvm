@@ -1,0 +1,468 @@
+import com.nolimitscoaster.*;
+import nlvm.math3d.*;
+
+public class Chain extends Script implements TrackTriggerListener{	
+	
+	SceneObject sco;
+
+	float[] pos2;
+	float catchCarLocation = 0;
+	float catchCarSpeed = 0;
+	Vector3f ccpos;
+	Vector3f drop;
+	Vector3f[] pos3;
+	
+	float wheelr = 0.15f;
+	
+	float time = -1;
+	
+	float accel = 0;
+	float lastPosA,curPosA;
+	
+	StaticSound sSound;
+	StaticSound sSound2;
+	StaticSound sSound3;
+	
+	TrackTrigger launch;
+	
+	StaticSound[] hiss,hiss2;
+	
+	float[] pitch;
+	float pitchvariation = 0.2f;
+	
+	SceneObjectElement[] scoe;
+	SceneObjectElement[] scof;
+	SceneObjectElement[] scoe2;
+	SceneObjectElement[] wheels;
+	SceneObjectElement cc;
+	SceneObjectElement bounce;
+	SceneObjectElement cable;
+	SceneObjectElement cable2;
+	SceneObjectElement start;
+	SceneObjectElement end;
+	int maxlength;
+	float distance;
+	Coaster c;
+	int lasti;
+	
+	public bool onInit(){
+	
+		sco = sim.getSceneObjectForEntityId(getParentEntityId());
+		distance = 4;
+		 maxlength = Integer.parseInt(sco.getName());
+	
+	
+		scoe = new SceneObjectElement[sco.getElementCount()];
+		scof = new SceneObjectElement[sco.getElementCount()];
+		hiss = new StaticSound[sco.getElementCount()];
+		hiss2 = new StaticSound[sco.getElementCount()];
+		scoe2 = new SceneObjectElement[sco.getElementCount()];
+		pos2 = new float[sco.getElementCount()];
+		pos3 = new Vector3f[sco.getElementCount()];
+		wheels = new SceneObjectElement[22];
+		pitch = new float[sco.getElementCount()];
+		drop = sco.getMatrix().getTrans();
+		
+		Vector3f pos = new Vector3f();
+		sco.getTranslation(pos);
+		final float range = 10;
+		TrackPos trackPos = sim.findNearestCoasterTrack(pos, range);
+		c = trackPos.getCoaster();
+		
+		
+		
+		launch = TrackTrigger.createTrackTriggerAtOffset(trackPos,0);
+		launch.addTrackTriggerListener(this);
+		
+		Matrix4x4f location = new Matrix4x4f();
+		
+		start = sco.getElementForName("Start");
+			
+		end = sco.getElementForName("End");
+		
+		cable = sco.getElementForName("CableActor");
+		cable2 = sco.getElementForName("CableActor2");
+		
+		bounce = sco.getElementForName("Bounce");
+		
+		location = trackPos.getTrackPosOnCenterRailsWithOffset(2).getCenterRailsMatrix();
+		start.setMatrix(location);
+		
+		for(int i = 0; i < 22; i++){
+			
+			if(i < 10){
+		wheels[i] = sco.getElementForName("Wheel_00" + i);			
+			}else{
+		wheels[i] = sco.getElementForName("Wheel_0" + i);
+			}
+		}
+		lasti = 0;
+		for(int i = 0; i < scoe.length && i*(distance)+12 < maxlength; i++){
+			
+			location = trackPos.getTrackPosOnCenterRailsWithOffset((i*distance)+5).getCenterRailsMatrix();
+			lasti = i;
+			
+			int i2 = (int)(i-(((((float)maxlength)*(5.0f/8.0f)-6)/4)));
+			
+			
+			
+			if(i2 > 0){
+			
+			
+			
+			
+				if(i2 == 0){
+			
+			scof[i2] = sco.getElementForName("MiddleFins");	
+			}else if(i2 < 10){
+				
+			scof[i2] = sco.getElementForName("MiddleFins_00" + i2);	
+		
+			}else if(i2 < 100){
+			scof[i2] = sco.getElementForName("MiddleFins_0" + i2);	
+			}else{
+			scof[i2] = sco.getElementForName("MiddleFins_" + i2);		
+			}
+			System.out.println(i2 + " " + scof[i2]);		
+				scof[i2].setMatrix(location);
+				
+			}
+			
+			location = trackPos.getTrackPosOnCenterRailsWithOffset((i*distance)+6).getCenterRailsMatrix();
+			
+			if(i == 0){
+				
+			cc = sco.getElementForName("CatchCar");
+			
+			
+			//cc.setMatrix(location);
+			//ccpos = new Vector3f(cc.getMatrix().getTrans());
+			
+			scoe[i] = sco.getElementForName("Main");	
+			scoe2[i] = sco.getElementForName("Fins");
+			}else if(i < 10){
+			scoe[i] = sco.getElementForName("Main_00" + i);		
+			scoe2[i] = sco.getElementForName("Fins_00" + i);
+			}else if(i < 100){
+			scoe[i] = sco.getElementForName("Main_0" + i);	
+			scoe2[i] = sco.getElementForName("Fins_0" + i);
+			}else{
+			scoe[i] = sco.getElementForName("Main_" + i);
+			scoe2[i] = sco.getElementForName("Fins_" + i);			
+			}
+
+			scoe[i].setMatrix(location);
+			scoe2[i].setMatrix(location);
+			
+			pos2[i] = 0;
+			pos3[i] = new Vector3f(scoe2[i].getMatrix().getTrans());
+			
+		}
+			
+
+		
+		location = trackPos.getTrackPosOnCenterRailsWithOffset(((lasti+1)*distance)+8).getCenterRailsMatrix();
+		//location = trackPos.getTrackPosOnCenterRailsWithOffset(maxlength-4).getCenterRailsMatrix();
+		end.setMatrix(location);
+	 
+		cable2.setScale(new Vector3f(1,1,(((lasti+1)*distance)+8)-4+0.2f));
+	
+		
+		sSound = StaticSound.loadFromFile("sound.ogg", 0);
+		if(sSound == null) {
+			System.err.println("Sound file not found");
+			return false;
+		}
+		sSound.setPosition(location.getTrans());
+		sSound.setDistanceParameters(60.0f,10.0f);
+
+		sSound.playLoop();
+		sSound2 = StaticSound.loadFromFile("sound2.ogg", 0);
+		if(sSound == null) {
+			System.err.println("Sound file not found");
+			return false;
+		}
+		sSound2.setPosition(location.getTrans());
+		sSound2.setDistanceParameters(60.0f,10.0f);
+
+		sSound2.playLoop();
+		sSound3 = StaticSound.loadFromFile("sound3.ogg", 0);
+		if(sSound3 == null) {
+			System.err.println("Sound file not found");
+			return false;
+		}
+		sSound3.setPosition(location.getTrans());
+		sSound3.setDistanceParameters(60.0f,10.0f);
+
+		sSound3.playLoop();
+		
+		sco.setMatrix(new Matrix4x4f());
+		
+		for(int i = 0; i < scoe.length && i*(distance)+12 < maxlength; i++){	
+			hiss[i] = StaticSound.loadFromFile("hiss1.ogg", 0);
+			hiss[i].setPosition(scoe[i].getAbsoluteMatrix().getTrans());
+			System.out.println(scoe[i].getAbsoluteMatrix().getTrans());			
+			hiss[i].setDistanceParameters(5,2);
+			pitch[i] = (float)(Math.random()*pitchvariation)+(1-(pitchvariation/2));
+			hiss[i].setPitch(pitch[i]);
+			hiss2[i] = StaticSound.loadFromFile("hiss2.ogg", 0);
+			hiss2[i].setPosition(scoe[i].getAbsoluteMatrix().getTrans());
+			hiss2[i].setDistanceParameters(5,2);
+			hiss2[i].setPitch(pitch[i]);
+			
+		}
+		
+			hiss2[0] = StaticSound.loadFromFile("drop.ogg", 0);
+			hiss2[0].setPosition(drop);
+			hiss2[0].setDistanceParameters(15,1);
+			hiss2[0].setPitch(1);	
+			hiss2[0].setGain(3);	
+	
+		
+		return true;
+	}
+	
+	Train train;
+	
+	public void lowerFins(int i){
+		if(pos2[i] > -0.18f){
+			pos2[i] -= sim.getCurSimulationTickSec()/8*pitch[i];
+			hiss[i].play();
+		}
+		
+	}
+	
+	public void raiseFins(int i){
+			if( i < scoe2.length && i*(distance)+12 < maxlength && i < oldTrainLoc/4-8){
+		if(pos2[i] < 0){
+			pos2[i] += sim.getCurSimulationTickSec()/8*pitch[i];
+			hiss[i].play();
+		}
+		
+		
+			}
+			
+	}
+	
+	
+	
+	public void moveCatchCar(){
+		
+		if(train != null){
+		
+		if(catchCarLocation < ((float)maxlength)*(5.0f/8.0f)-6){
+		catchCarLocation += (float)train.getSpeed()*sim.getCurSimulationTickSec();
+		
+		if(pos2[0] <=  -0.18f){
+			
+			lower = false;
+			
+		}
+		
+		
+		}else{
+			
+			train = null;
+			
+		}
+		catchCarLocation += catchCarSpeed*sim.getCurSimulationTickSec();
+		
+		}else{
+			
+			if((catchCarLocation < ((float)maxlength)*(6.5f/8.0f)-6) && (catchCarLocation > ((float)maxlength)*(6.5f/8.0f)-7)){
+				
+				for(int i = 0; i < scoe.length && i*(distance)+12 < maxlength; i++){
+					
+			int i2 = (int)(i-(((((float)maxlength)*(5.0f/8.0f)-6)/4)));
+			
+				if(i2 > 0){
+				
+				hiss2[i].play();
+				
+				}
+				
+			}
+			}
+			
+			if((catchCarLocation < ((float)maxlength)*(2.5f/8.0f)-6) && (catchCarLocation > ((float)maxlength)*(2.5f/8.0f)-7)){
+				
+				for(int i = 0; i < scoe.length && i*(distance)+12 < maxlength; i++){
+					
+			int i2 = (int)(i-(((((float)maxlength)*(5.0f/8.0f)-6)/4)));
+			
+				if(i2 > 0){
+				
+				hiss2[i].play();
+				
+				}
+				
+			}
+			}
+			
+			if(accel < -2.0f && catchCarLocation < 20){
+
+				accel += 2.81f*sim.getCurSimulationTickSec();
+			
+			}else if(accel > 0 && catchCarLocation > 0){
+				
+				
+				
+				accel -= 9.81f*3.0f*sim.getCurSimulationTickSec();
+				
+			}else if(accel > -9.5f && catchCarLocation > 0){
+				
+				
+				
+				accel -= 9.81f*0.2f*sim.getCurSimulationTickSec();
+				
+			}
+			
+			
+			
+			if(catchCarLocation <= 0){
+				
+				catchCarLocation = 0;
+				accel = 0;
+			}
+		catchCarLocation += accel*sim.getCurSimulationTickSec();	
+			
+		}
+	
+		for(int i = 0; i < wheels.length; i++){
+			if(i < 6){
+			wheels[i].setRotation(catchCarLocation/((float)Math.PI)/wheelr,0,0);
+			}else{
+			wheels[i].setRotation(-catchCarLocation/((float)Math.PI)/wheelr,0,0);	
+			}
+		}
+	
+		cable.setScale(new Vector3f(1,1,catchCarLocation+0.5f));
+		
+		
+		bounce.setTranslation(new Vector3f(0,0,(float)accel/400*(float)(Math.sin(accel))));
+		
+		cc.setTranslation(new Vector3f(0,0,-catchCarLocation+4));
+		
+		
+	}
+	
+	bool lower = false;
+	bool raise = false;
+	
+	bool ready = false;
+	
+	float delayLength = 1.5f;
+	float delay = 0;
+	
+	public void onNextFrame(float tick){
+		moveCatchCar();
+		
+		if(ready && accel >= 0 && oldTrain.getSpeed() == 0){
+			
+			if(delay > 0.25f && delay < 0.5f){
+				
+				hiss2[0].play();
+				
+			}
+			
+			delay += sim.getCurSimulationTickSec();
+
+			if(delay > delayLength){
+			
+		time = 0;
+		this.train = oldTrain;
+			
+			oldTrainLoc = 0;
+			if(lower == false){
+			lower = true;
+			}
+			ready = false;
+			
+			}
+		}else{
+			
+			delay = 0;
+			
+		}
+		
+		//float gain = (float)(Math.pow(2,0.1*accel)/2)-0.7f;
+		float gain = (float)(accel*accel)/2;
+		
+		sSound.setPitch((accel)/14);
+		sSound.setGain(gain);
+		sSound.setDistanceParameters(accel-3,5.0f);
+		
+		sSound2.setPitch((accel)/64);
+		sSound2.setGain(0);
+		sSound2.setDistanceParameters(accel-10,5.0f);
+		
+		sSound3.setPitch((accel)/32);
+		sSound3.setGain(0);
+		sSound3.setDistanceParameters(accel-15,5.0f);
+		
+
+		lastPosA = curPosA;
+		curPosA = catchCarLocation;
+		
+		if(train != null){
+
+		accel = (curPosA-lastPosA)*(1/sim.getCurSimulationTickSec());
+
+		}
+	
+		
+		if(oldTrain != null){
+			
+			oldTrainLoc += oldTrain.getSpeed()* sim.getCurSimulationTickSec();
+			
+		}
+		
+		//System.out.println(accel);
+		
+		for(int i = 0; i < scoe2.length && i*(distance)+12 < maxlength; i++){
+			
+			if(lower){
+
+				lowerFins(i);
+			}
+			
+			if(lower == false){
+					raiseFins(i);
+			}	
+			
+				
+				
+				
+				
+				
+				
+			 scoe2[i].setTranslation(new Vector3f(pos3[i].x,pos3[i].y + pos2[i],pos3[i].z));
+			
+			
+			
+			
+		}
+		
+		
+		
+	}
+	
+	Train oldTrain;
+	float oldTrainLoc = 0;
+	public void onTrainEntering(TrackTrigger trigger, Train train)
+   {
+	
+		if(trigger == launch){
+
+			oldTrain = train;
+			ready = true;
+			}
+		
+	
+	}  
+	public void onTrainLeaving(TrackTrigger trigger, Train train)
+   {
+	
+	}   
+	
+}

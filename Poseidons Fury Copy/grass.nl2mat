@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <deformvertices>
+      <deformverticesplant frequency="0.07" dx="0.01" dy="0.01"/>
+    </deformvertices>
+    <renderpass>
+      <alphatest function="ge128"/>
+      <custommaterial>
+        <diffuse r="0.666667" g="0.690196" b="0.619608"/>
+        <ambient r="0.239216" g="0.278431" b="0.25098"/>
+      </custommaterial>
+      <rgbgen mode="constlighting"/>
+      <texunit>
+        <map>gs.tga</map>
+        <nocompress/>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+    <option nonsolid="true"/>
+  </material>
+</root>

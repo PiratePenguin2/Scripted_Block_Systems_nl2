@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <custommaterial>
+        <ambient r="0.682353" g="0.682353" b="0.682353"/>
+        <specular r="0" g="0" b="0"/>
+      </custommaterial>
+      <alphagen mode="vertex"/>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <map>StatueNorm.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/CocoPalm.dae"/>
+    <description>Tropical beach palm</description>
+    <preview>TEXTURES/CocoPalm/cocoicon.jpg</preview>
+    <param randomroty="true"/>
+    <param randomrotvariationy="180"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.2"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.2"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.2"/>
+    <param lockonterrain="true"/>
+    <materialpath name="coconut_test3_clean">TEXTURES/cocopalm.nl2mat</materialpath>
+  </sceneobject>
+</root>

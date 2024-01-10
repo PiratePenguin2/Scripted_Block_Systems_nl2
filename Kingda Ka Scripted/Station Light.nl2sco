@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="pendantlight.3ds"/>
+    <description>Simple spotlight with halo and volume</description>
+    <preview>base:scene objects/Lights/spot1preview.jpg</preview>
+    <script>
+      <classpath>base:scene objects/Lights</classpath>
+      <class>LightScript</class>
+      <sharedvm>false</sharedvm>
+    </script>
+    <materialpath name="Sophie_S">Lightoutside.nl2mat</materialpath>
+    <materialpath name="cast_iro">Lightoutside.nl2mat</materialpath>
+    <materialpath name="steel_pl">Lightinside.nl2mat</materialpath>
+    <lightsource range="12.192" intensity="2" type="spot" spotcutoff="60" spotexponent="5">
+      <direction x="0" y="-1" z="0"/>
+      <upvector x="0" y="1" z="0"/>
+      <name>thelight</name>
+      <position x="0" y="-0.216408" z="0"/>
+      <color r="1" g="1" b="1"/>
+      <halo zoffset="0" intensity="1" size="0.6096"/>
+      <volume range="0.6096" intensity="1" size="0.003048"/>
+    </lightsource>
+  </sceneobject>
+</root>

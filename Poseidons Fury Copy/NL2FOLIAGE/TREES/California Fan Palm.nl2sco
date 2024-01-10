@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/CaliforniaFanPalm.dae"/>
+    <description>Washingtonia Filifera</description>
+    <preview>TEXTURES/CaliforniaFanPalm/fanicon.jpg</preview>
+    <param randomroty="true"/>
+    <param randomrotvariationy="180"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.2"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.2"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.2"/>
+    <param lockonterrain="true"/>
+    <materialpath name="material_1">TEXTURES/CFP_1.nl2mat</materialpath>
+    <materialpath name="material_2">TEXTURES/CFP_2.nl2mat</materialpath>
+  </sceneobject>
+</root>

@@ -1,0 +1,35 @@
+
+import com.nolimitscoaster.*;
+import nlvm.math3d.*;
+
+public class staticsound extends Script
+{
+private SceneObject sco;
+
+private StaticSound sound;
+private static final float Distance = 17.0f;
+private static final float FallOff = 20.0f;
+
+public bool onInit()
+{
+sco = sim.getSceneObjectForEntityId(getParentEntityId());
+
+sound = StaticSound.loadFromFile("kingdaka.ogg", 0);
+if (sound == null)
+{
+System.err.println("Sound file not found");
+return false;
+}
+
+Vector3f pos = new Vector3f();
+sco.getTranslation(pos);
+
+sound.setEnvironmentMode(StaticSound.E_ENVMODE_GLOBAL);
+sound.setPosition(pos);
+sound.setDistanceParameters(17.0f, 20.0f);
+sound.setDopplerMode(true);
+
+sound.playLoop();
+return true;
+}
+}

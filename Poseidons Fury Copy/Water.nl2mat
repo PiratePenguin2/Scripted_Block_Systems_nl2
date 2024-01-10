@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <polygonoffset/>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+        <specular r="1" g="1" b="1"/>
+        <shininess exponent="100"/>
+      </custommaterial>
+      <reflection bump="true" fresnelconst="0.3" fresnelvar="0.35"/>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>water.png</map>
+        <tcgen mode="base"/>
+        <tcmod mode="scroll" speeds="0.2" speedt="0"/>
+      </texunit>
+      <texunit>
+        <map>Water.jpg</map>
+        <bump mode="normalgloss"/>
+        <tcgen mode="base"/>
+        <tcmod mode="scroll" speeds="0.1" speedt="0"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

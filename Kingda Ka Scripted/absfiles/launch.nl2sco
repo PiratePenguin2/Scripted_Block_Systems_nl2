@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="launch.dae">
+      <clip distance="13.716"/>
+    </model>
+    <preview>launch/material_1.png</preview>
+  </sceneobject>
+</root>

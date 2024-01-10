@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <deformvertices>
+      <deformverticesplant frequency="0.09" dx="0.02" dy="0.02"/>
+    </deformvertices>
+    <renderpass>
+      <alphatest function="ge128"/>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <map>CaliforniaFanPalm/material_1.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="rightloadmodemain.dae">
+      <clip distance="13.716"/>
+    </model>
+    <preview>rightloadmodemain/material_1.png</preview>
+  </sceneobject>
+</root>

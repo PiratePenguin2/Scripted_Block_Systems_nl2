@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <shadercore>tmp2 = mul(1.5,tex2);
+tmp2 = add(.2,tmp2);
+ambient = tmp2;
+result = mul(1.2,tex0);</shadercore>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+      </custommaterial>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>Brick3_COLOR.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Brick3_NRM.png</map>
+        <bump mode="normalgloss"/>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Map1.png</map>
+        <tcgen mode="lightmapcoord"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

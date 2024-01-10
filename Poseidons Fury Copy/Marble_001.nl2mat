@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <shadercore>ambient = tex2;
+result = add(0,tex0);</shadercore>
+      <alphatest function="ge128"/>
+      <polygonoffset/>
+      <premultiplyalpha/>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+      </custommaterial>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>Marble_COLOR.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Marble_NRM.png</map>
+        <bump mode="normalgloss"/>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Map1.png</map>
+        <tcgen mode="lightmapcoord"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

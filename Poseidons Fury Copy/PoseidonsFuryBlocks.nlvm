@@ -1,0 +1,83 @@
+import blockhelper.*;
+import com.nolimitscoaster.*;
+
+public class PoseidonsFuryBlocks extends Script{
+    private BlockHelperController blockHelperController;
+
+    public bool onInit(){
+        Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
+        blockHelperController = new BlockHelperController(coaster);
+
+        BlockHelper unloadBlock = blockHelperController.createStationBlock("Unload");
+        BlockHelper loadBlock = blockHelperController.createStationBlock("Load");
+        BlockHelper launchBlock = blockHelperController.createBrakeBlock("Launch");
+        BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("FinalBrake");
+
+        BlockHelper storage1Block = blockHelperController.createStorageBlock("Storage1");
+        BlockHelper storage2Block = blockHelperController.createStorageBlock("Storage2");
+
+        SpecialTrack stationSideSwitch = coaster.getSpecialTrack("StationSide");
+        SpecialTrack launchSideSwitch = coaster.getSpecialTrack("LaunchSide");
+
+    //Unload
+        unloadBlock.setLeaveModeMoveFwd();
+        unloadBlock.selectFwdConditions();
+        unloadBlock.addConditionBlockFree(loadBlock);
+        unloadBlock.addConditionChangeSwitch(stationSideSwitch, 0, false);
+        
+    //Load
+        loadBlock.setLeaveModeMoveBwd();
+        loadBlock.selectBwdConditions();
+        loadBlock.addConditionChangeSwitch(stationSideSwitch, 1, false); //Move stationSideSwitch immediately once train parks
+        loadBlock.addConditionBlockFree(launchBlock);
+        loadBlock.addConditionChangeSwitch(launchSideSwitch, 0, false); //Wait till launch block is free to move launchSideSwitch
+
+        loadBlock.selectFwdConditions();
+        loadBlock.addConditionBlockFree(storage1Block);
+
+    //Launch
+        launchBlock.setLeaveModeLaunchFwd();
+        launchBlock.selectFwdConditions();
+        launchBlock.addConditionChangeSwitch(launchSideSwitch, 1, false);
+        launchBlock.addConditionWait(12);
+        launchBlock.addConditionBlockFree(finalBrakeBlock);
+
+    //FinalBrake
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(unloadBlock);              
+
+    //Storage1
+        storage1Block.selectBwdConditions();
+        storage1Block.addConditionBlockFree(loadBlock);
+
+        storage1Block.selectFwdConditions();
+        storage1Block.addConditionBlockFree(storage2Block);
+
+    //Storage2
+        storage2Block.selectBwdConditions();
+        storage2Block.addConditionBlockFree(storage1Block);
+
+        /*if (launchBlock.isTrainOnSection())
+        {
+            System.out.println("A");
+        }*/
+
+        /*if (block != null)
+        {
+          block.setState(state); 
+        }*/
+
+        return true;
+    }
+
+    /*public abstract void(onTrainEntering(TrackTrigger "LaunchBlock_FREE", Train train))
+    {
+        //launchBlock.setState(1);
+    }*/
+
+
+    public void onNextFrame(float tick){
+        blockHelperController.process();
+    }
+}

@@ -1,0 +1,79 @@
+import blockhelper.*;
+import com.nolimitscoaster.*;
+
+public class SimpleSquare extends Script{
+    private BlockHelperController blockHelperController;
+
+    public bool onInit(){
+        Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
+        blockHelperController = new BlockHelperController(coaster);
+
+        BlockHelper stationBlock = blockHelperController.createStationBlock("Station");
+        BlockHelper liftBlock = blockHelperController.createLiftBlock("Lift");
+        BlockHelper brakeBlock = blockHelperController.createBrakeBlock("Brake");
+        BlockHelper transfer1Block = blockHelperController.createBrakeBlock("Transfer1");
+        BlockHelper transfer2Block = blockHelperController.createBrakeBlock("Transfer2");
+        BlockHelper storage1Block = blockHelperController.createStorageBlock("Storage1");
+        BlockHelper storage2Block = blockHelperController.createStorageBlock("Storage2");
+
+        SpecialTrack transfer1Switch = coaster.getSpecialTrack("Transfer1");
+        SpecialTrack transfer2Switch = coaster.getSpecialTrack("Transfer2");
+
+    //Station
+        stationBlock.setLeaveModeMoveFwd();
+        stationBlock.selectFwdConditions();
+        stationBlock.addConditionBlockFree(liftBlock);
+
+        stationBlock.selectBwdConditions();
+        stationBlock.addConditionBlockFree(transfer2Block);
+        stationBlock.addConditionChangeSwitch(transfer2Switch, 1, false);
+        
+    //Lift
+        liftBlock.setLeaveModeMoveFwd();
+        liftBlock.selectFwdConditions();
+        liftBlock.addConditionWait(4);
+        liftBlock.addConditionBlockFree(brakeBlock);
+
+    //Brake
+        brakeBlock.setLeaveModeMoveFwd();
+        brakeBlock.selectFwdConditions();
+        brakeBlock.addConditionBlockFree(transfer1Block);
+        brakeBlock.addConditionChangeSwitch(transfer1Switch, 1, true);
+
+    //Transfer1
+        transfer1Block.setLeaveModeLaunchBwd();
+        transfer1Block.selectBwdConditions();
+        transfer1Block.addConditionBlockFree(transfer2Block);
+        transfer1Block.addConditionChangeSwitch(transfer2Switch, 0, true);
+        transfer1Block.addConditionChangeSwitch(transfer1Switch, 0, false);
+
+    //Transfer2
+        transfer2Block.setLeaveModeMoveFwd();
+        transfer2Block.selectFwdConditions();
+        transfer2Block.addConditionChangeSwitch(transfer2Switch, 1, false);
+        transfer2Block.addConditionBlockFree(stationBlock);
+
+        transfer2Block.selectBwdConditions();
+        transfer2Block.addConditionChangeSwitch(transfer2Switch, 1, false);
+        transfer2Block.addConditionBlockFree(storage1Block);
+
+    //Storage1
+        storage1Block.selectFwdConditions();
+        storage1Block.addConditionBlockFree(transfer2Block);
+        storage1Block.addConditionChangeSwitch(transfer2Switch, 1, false);
+
+        storage1Block.selectBwdConditions();
+        storage1Block.addConditionBlockFree(storage2Block);
+
+    //Storage2
+        storage2Block.selectFwdConditions();
+        storage2Block.addConditionBlockFree(storage1Block);
+
+
+        return true;
+    }
+
+    public void onNextFrame(float tick){
+        blockHelperController.process();
+    }
+}

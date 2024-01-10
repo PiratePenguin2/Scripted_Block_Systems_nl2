@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <deformvertices>
+      <deformverticesplant frequency="0.02" dx="0.05" dy="0.05"/>
+    </deformvertices>
+    <renderpass>
+      <alphatest function="ge128"/>
+      <rgbgen mode="constlighting"/>
+      <texunit>
+        <map>Gunnera/Trees2.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+    <option nonsolid="true"/>
+  </material>
+</root>

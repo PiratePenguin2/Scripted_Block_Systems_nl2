@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <shadercore>ambient = mul(1.5,tex2);
+result = mul(1.2,tex0);</shadercore>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+      </custommaterial>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>BrickRound0088_1_S.jpg</map>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>BrickRound0088_1_S.jpg</map>
+        <bump mode="heightgloss" heightscale="2.2"/>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Map1.png</map>
+        <tcgen mode="lightmapcoord"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

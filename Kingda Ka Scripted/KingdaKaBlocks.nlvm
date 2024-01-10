@@ -1,0 +1,139 @@
+import blockhelper.*;
+import com.nolimitscoaster.*;
+
+public class KingdaKaBlocks extends Script{
+    private BlockHelperController blockHelperController;
+
+    public bool onInit(){
+        Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
+        blockHelperController = new BlockHelperController(coaster);
+
+        BlockHelper rightLoadBlock = blockHelperController.createStationBlock("Right Loading Station");
+        BlockHelper rightUnloadBlock = blockHelperController.createStationBlock("Right Unloading Station");
+        BlockHelper leftLoadBlock = blockHelperController.createStationBlock("Left Loading Station");
+        BlockHelper leftUnloadBlock = blockHelperController.createStationBlock("Left Unloading Station");
+        
+        BlockHelper mergeBlock = blockHelperController.createBrakeBlock("Merge");
+        BlockHelper transferBlock = blockHelperController.createBrakeBlock("Transfer");
+        BlockHelper launchBlock = blockHelperController.createBrakeBlock("Launch");
+
+        BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("Final Brake");
+        BlockHelper rightHoldingBrakeBlock = blockHelperController.createBrakeBlock("Right Holding Brake");
+        BlockHelper leftHoldingBrakeBlock = blockHelperController.createBrakeBlock("Left Holding Brake");
+
+        BlockHelper rightStorage1Block = blockHelperController.createStorageBlock("Right Storage 1");
+        BlockHelper rightStorage2Block = blockHelperController.createStorageBlock("Right Storage 2");
+        BlockHelper leftStorage1Block = blockHelperController.createStorageBlock("Left Storage 1");
+        BlockHelper leftStorage2Block = blockHelperController.createStorageBlock("Left Storage 2");
+
+        SpecialTrack forkSwitch = coaster.getSpecialTrack("Fork Switch");
+        SpecialTrack mergeSwitch = coaster.getSpecialTrack("Merge Switch");
+        SpecialTrack transferSwitch = coaster.getSpecialTrack("Transfer Switch");
+
+        System.out.println("Testing");
+
+    /*------------------*\
+    |*      Circuit     *|
+    \*------------------*/
+    //RightLoad
+        rightLoadBlock.setLeaveModeMoveFwd();
+        rightLoadBlock.selectFwdConditions();
+        rightLoadBlock.addConditionBlockFree(mergeBlock);
+        rightLoadBlock.addConditionChangeSwitch(mergeSwitch, 1, true);
+        
+    //RightUnload
+        rightUnloadBlock.setLeaveModeMoveFwd();
+        rightUnloadBlock.selectFwdConditions();
+        rightUnloadBlock.addConditionBlockFree(rightLoadBlock);
+
+    //LeftLoad
+        leftLoadBlock.setLeaveModeMoveFwd();
+        leftLoadBlock.selectFwdConditions();
+        leftLoadBlock.addConditionBlockFree(mergeBlock);
+        leftLoadBlock.addConditionChangeSwitch(mergeSwitch, 0, false);
+        
+    //LeftUnload
+        leftUnloadBlock.setLeaveModeMoveFwd();
+        leftUnloadBlock.selectFwdConditions();
+        leftUnloadBlock.addConditionBlockFree(leftLoadBlock);
+
+    //Merge
+        mergeBlock.setLeaveModeMoveFwd();
+        mergeBlock.selectFwdConditions();
+        mergeBlock.addConditionBlockFree(transferBlock);
+        //mergeBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+
+    //Transfer
+        transferBlock.setLeaveModeMoveFwd();    //Launch
+        transferBlock.selectFwdConditions();
+        transferBlock.addConditionBlockFree(launchBlock);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+        
+        transferBlock.selectFwdConditions();    //Right Storage
+        transferBlock.addConditionBlockFree(rightStorage2Block);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 1, false);
+
+        transferBlock.selectFwdConditions();    //Left Storage
+        transferBlock.addConditionBlockFree(leftStorage2Block);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 0, false);
+
+    //Launch
+        launchBlock.setLeaveModeLaunchFwd();
+        launchBlock.selectFwdConditions();
+        launchBlock.addConditionBlockFree(finalBrakeBlock);
+
+    //Final Brake
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(rightHoldingBrakeBlock);
+        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 1, true);
+
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(leftHoldingBrakeBlock);
+        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 0, true);
+
+    //Right Holding Brake
+        rightHoldingBrakeBlock.setLeaveModeMoveFwd();
+        rightHoldingBrakeBlock.selectFwdConditions();
+        rightHoldingBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+            
+    //Left Holding Brake
+        leftHoldingBrakeBlock.setLeaveModeMoveFwd();
+        leftHoldingBrakeBlock.selectFwdConditions();
+        leftHoldingBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+
+    /*------------------*\
+    |*      Storage     *|
+    \*------------------*/
+    //Right Storage 2 
+        rightStorage2Block.selectBwdConditions();
+        rightStorage2Block.addConditionBlockFree(transferBlock);
+        rightStorage2Block.addConditionChangeSwitch(transferSwitch, 1, false);
+
+        rightStorage2Block.selectFwdConditions();
+        rightStorage2Block.addConditionBlockFree(rightStorage1Block);
+
+    //Right Storage 1
+        rightStorage1Block.selectBwdConditions();
+        rightStorage1Block.addConditionBlockFree(rightStorage2Block);
+
+    //Left Storage 2 
+        leftStorage2Block.selectBwdConditions();
+        leftStorage2Block.addConditionBlockFree(transferBlock);
+        leftStorage2Block.addConditionChangeSwitch(transferSwitch, 0, false);
+
+        leftStorage2Block.selectFwdConditions();
+        leftStorage2Block.addConditionBlockFree(leftStorage1Block);
+
+    //Left Storage 1
+        leftStorage1Block.selectBwdConditions();
+        leftStorage1Block.addConditionBlockFree(leftStorage2Block);
+
+        return true;
+    }
+
+    public void onNextFrame(float tick){
+        blockHelperController.process();
+    }
+}

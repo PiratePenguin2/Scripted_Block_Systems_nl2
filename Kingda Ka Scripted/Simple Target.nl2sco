@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="box.lwo"/>
+    <description>Can be used for the External Track Camera as a target. Give this a name of &apos;Target0&apos;, &apos;Target1&apos; etc..</description>
+    <preview>targetpreview.jpg</preview>
+    <script>
+      <classpath></classpath>
+      <class>staticsound</class>
+    </script>
+  </sceneobject>
+</root>

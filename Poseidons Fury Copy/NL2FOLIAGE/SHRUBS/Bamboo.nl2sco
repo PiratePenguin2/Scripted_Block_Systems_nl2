@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/Bamboo.dae"/>
+    <description>Tall, leafy, vertical grass</description>
+    <preview>TEXTURES/Bamboo/bambooICON.jpg</preview>
+    <param allowscale="false"/>
+    <param randomroty="true"/>
+    <param randomrotvariationy="180"/>
+    <param uniformrandomscale="true"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.4"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.7"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.7"/>
+    <param lockonterrain="true"/>
+    <materialpath name="material_4">TEXTURES/bamboo.nl2mat</materialpath>
+  </sceneobject>
+</root>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <colormap r="0.956863" g="0.901961" b="0" a="1"/>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

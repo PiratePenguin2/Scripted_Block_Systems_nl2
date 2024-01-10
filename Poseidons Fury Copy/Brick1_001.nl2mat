@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <shadercore>tmp2 = mul(1.5,tex2);
+tmp2 = add(.2,tmp2);
+ambient = tmp2;
+tmp2 = sub(.5,tmp2);
+tmp0 = mul(tmp2,tex3);
+tmp0 = saturate(tmp0);
+tmp1 = sub(tex0,tmp0);
+result = mul(1.2,tmp1);</shadercore>
+      <custommaterial>
+        <diffuse r="0.968628" g="0.862745" b="0.764706"/>
+        <ambient r="0.968628" g="0.862745" b="0.764706"/>
+      </custommaterial>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>Brick1_COLOR.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Brick1_NRM.png</map>
+        <bump mode="normalgloss"/>
+        <tcgen mode="base"/>
+      </texunit>
+      <texunit>
+        <map>Map1.png</map>
+        <tcgen mode="lightmapcoord"/>
+      </texunit>
+      <texunit>
+        <map>Brick1_OCC.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

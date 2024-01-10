@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <alphatest function="ge128"/>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <map>CocoPalm/coconutleaf.png</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

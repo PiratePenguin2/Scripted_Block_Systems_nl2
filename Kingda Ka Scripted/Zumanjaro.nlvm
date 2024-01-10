@@ -1,0 +1,214 @@
+import com.nolimitscoaster.*;
+import nlvm.math3d.*;
+
+public class Zumanjaro extends Script
+{
+  private SceneObject sco;
+  private SceneObjectElement tower;
+  private SceneObjectElement restraints;
+  private SceneObjectElement gondolaSeats;
+  private SceneObjectElement gondolaLift;
+  private SceneObjectElement magnets;
+  private SceneObjectElement wheel1;
+  private SceneObjectElement wheel2;
+  private SceneObjectElement camera;
+  
+  private int setup;
+  private float angle;
+  private float angle2;
+  private float angle3;
+  
+  private static final float startHeight = 0.0f;
+  private static final float maxHeight = 127.0f; // Height of Drop Tower (In Meters). 200 meters maximum. 20 meters minimum otherwise script crashes.
+
+  float exxt;
+  float height;
+  float timer;
+  float timer2;
+  float timer3;
+  float multiplier = 0;
+  float multiplier2 = 1;
+  
+  int randomInt=0;
+  
+  Vector3f towerTrans;
+  Vector3f magnetsTrans;
+  Vector3f gondolaSeatsTrans;
+  Vector3f gondolaLiftTrans;
+
+  private static final float c_warpRange = 10.0f;
+  private ExternalRideView view;
+  private Matrix4x4f viewCamera = new Matrix4x4f();	
+  private float viewX = 0;
+  private float viewZ = 0;
+  private Vector3f posOut = new Vector3f(0,0,0);	
+  private Vector3f pitchHeadBankOut = new Vector3f(0, 0, 0);
+  private float seatOffsetVertical = 0.0f;
+  private float seatOffsetHorizontal = 0.0f;
+  private float seatOffsetRotation = 0.0f;
+  
+  private SceneObjectLight light;
+  
+  int phase;
+  
+  private static final int STATE_STATION = 0;
+  private static final int STATE_CLIMB = 1;
+  private static final int STATE_DROP = 2;
+  private static final int STATE_LOWER = 3;
+
+  
+   public bool onInit()
+  {
+    sco = sim.getSceneObjectForEntityId(getParentEntityId());
+    
+    tower = sco.getElementForName("Tower");
+	camera = sco.getElementForName("Camera2");
+	restraints = sco.getElementForName("Restraints");
+	gondolaSeats = sco.getElementForName("GondolaSeats");
+	gondolaLift = sco.getElementForName("GondolaLift");
+	magnets = sco.getElementForName("Magnets");
+	wheel1 = sco.getElementForName("Wheel1");
+	wheel2 = sco.getElementForName("Wheel2");
+	
+	light = sco.getLightForName("CameraFlash");
+	
+	towerTrans = new Vector3f();
+	magnetsTrans = new Vector3f();
+	gondolaSeatsTrans = new Vector3f();
+	gondolaLiftTrans = new Vector3f();
+    
+    view = sim.createExternalRideView();
+	view.setCurrentCarIndex(1);
+    view.setEnterWarpPoint(sco.getTranslation(), c_warpRange);
+    view.setLabel("Drop Tower");
+	
+
+	
+    return true;
+  }
+  
+  
+    public void onNextFrame(float tick)
+  {
+
+  	if (setup == 0){
+	towerTrans.y = maxHeight - 200.0f;
+	magnetsTrans.y = (maxHeight / 4) - 50.0f;
+	phase = 0;
+	light.setEnabled(false);
+	setup = 1;
+
+	}
+	
+	switch(phase)
+	{
+		case STATE_STATION:
+		
+			timer += sim.getCurSimulationTickSec();
+			if (timer <= 20){
+			angle = (float)Math.toRadians(90 * Tools.switchRampC2(5.0f, 1.0f, 2.5f, timer));
+			timer2 = 5;
+			
+			} else if (timer>=20){
+			timer2 -= sim.getCurSimulationTickSec();
+			angle = (float)Math.toRadians(90 * Tools.switchRampC2(5.0f, 1.0f, 2.5f, timer2));
+			}
+			
+			if(timer>=26)
+			{
+				randomInt = 0;
+				phase = STATE_CLIMB;
+			}
+		break;
+		case STATE_CLIMB:
+			multiplier += sim.getCurSimulationTickSec();
+			gondolaSeatsTrans.y = startHeight + (float)Tools.switchRampC2((maxHeight*80)/200, maxHeight-7, 10, multiplier);
+			gondolaLiftTrans.y = startHeight + (float)Tools.switchRampC2((maxHeight*80)/200, maxHeight-7, 10, multiplier);
+		
+			if (multiplier >= ((maxHeight*80)/200)+2)
+			{
+			phase = STATE_DROP;
+			timer = 0;
+			timer2 = 0;
+			timer3 = 0;
+			}
+		break;
+		case STATE_DROP:
+		timer += sim.getCurSimulationTickSec();
+		if (timer <= 0.0625)
+		{
+			light.setEnabled(true);
+		} else {
+			light.setEnabled(false);
+		}
+		
+		if (maxHeight-7-timer3 >= maxHeight/4)
+		{
+			timer2 += 9.8 * sim.getCurSimulationTickSec();
+			timer3 += timer2 * sim.getCurSimulationTickSec();
+		} else if (maxHeight-7-timer3 <= maxHeight/4 && timer2 >= 2.5)
+		{
+			timer2 -= 50 * sim.getCurSimulationTickSec();
+			timer3 += timer2 * sim.getCurSimulationTickSec();
+		}
+		
+		if (maxHeight-7-timer3 <= maxHeight/4 && timer2 <= 2.5 && maxHeight-7-timer3 >= startHeight + 2)
+		{
+			timer3 += 2.5 * sim.getCurSimulationTickSec();
+			multiplier = 2.5f;
+		}
+		
+		if (maxHeight-7-timer3 <= maxHeight/4 && timer2 <= 2.5 && maxHeight-7-timer3 <= startHeight + 2)
+		{
+		multiplier -= 1.5 * sim.getCurSimulationTickSec();
+		timer3 += multiplier * sim.getCurSimulationTickSec();
+		}
+		
+		if (maxHeight-7-timer3 <= startHeight)
+		{
+			phase = STATE_LOWER;
+			timer3 = 0;
+			timer2 = 0;
+			timer = 0;
+			multiplier = (maxHeight*40)/200;
+		}
+		gondolaSeatsTrans.y = maxHeight-7 - timer3;
+		break;
+		case STATE_LOWER:
+			multiplier -= sim.getCurSimulationTickSec();
+			gondolaSeatsTrans.y = 0;
+			gondolaLiftTrans.y = startHeight + (float)Tools.switchRampC2((maxHeight*40)/200, maxHeight-7, 2, multiplier);
+			
+			if (gondolaLiftTrans.y == 0)
+			{
+				phase = STATE_STATION;
+			}
+		break;
+	}
+	restraints.setRotation(angle, 0, 0);
+	gondolaSeats.setTranslation(gondolaSeatsTrans);
+	gondolaLift.setTranslation(gondolaLiftTrans);
+	
+	tower.setTranslation(towerTrans);
+	magnets.setTranslation(magnetsTrans);
+
+	if (view.isActive())
+    { 
+      viewCamera = camera.getAbsoluteMatrix();	
+		Tools.matrixToPitchHeadBankPos(viewCamera, pitchHeadBankOut, posOut);
+	
+		viewZ = (float)Math.cos(pitchHeadBankOut.y + seatOffsetRotation) * seatOffsetHorizontal;
+		viewX = (float)Math.sin(pitchHeadBankOut.y + seatOffsetRotation) * seatOffsetHorizontal;
+				
+		viewCamera.setElemAt(3,0,(viewCamera.elemAt(3,0) + viewX ));		// X		
+		viewCamera.setElemAt(3,1,(viewCamera.elemAt(3,1) + 1.4f));	// Y
+		viewCamera.setElemAt(3,2,(viewCamera.elemAt(3,2) + viewZ ));	// Z
+		view.setCameraMatrix(viewCamera);
+	  }
+  }
+}
+  
+  
+  
+  
+  

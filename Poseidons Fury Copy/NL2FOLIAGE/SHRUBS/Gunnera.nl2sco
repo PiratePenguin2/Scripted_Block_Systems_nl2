@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/Gunnera.dae"/>
+    <description>Large broad-leafed plant</description>
+    <preview>TEXTURES/Gunnera/gunneraicon.jpg</preview>
+    <param randomroty="true"/>
+    <param randomrotvariationy="180"/>
+    <param basescalex="1.5"/>
+    <param basescaley="1.5"/>
+    <param basescalez="1.5"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.3"/>
+    <param lockonterrain="true"/>
+    <param adjustterrainslope="true"/>
+    <materialpath name="Trees2">TEXTURES/gunnera.nl2mat</materialpath>
+  </sceneobject>
+</root>

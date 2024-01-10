@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="TEXTURES/NZFlax.dae"/>
+    <description>Strappy, flat-leafed shrub</description>
+    <preview>TEXTURES/NZFlax/nzicon.jpg</preview>
+    <param randomroty="true"/>
+    <param randomrotvariationy="360"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.2"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.2"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.2"/>
+    <param lockonterrain="true"/>
+    <materialpath name="Shrubs4">TEXTURES/NZflax.nl2mat</materialpath>
+  </sceneobject>
+</root>

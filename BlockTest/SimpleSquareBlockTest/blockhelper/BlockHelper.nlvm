@@ -1,0 +1,1033 @@
+package blockhelper;
+
+import com.nolimitscoaster.*;
+
+
+/**
+ * Helper class for to simplify implementation of block scripts.
+ * This implements most of the boring stuff that is required to handle
+ * a proper working block system.
+ *
+ * Change log
+ * ---------------------------------
+ * 2017-05-18   Created
+ * 2017-10-03   Modified brake to trim in brake section leaving state
+ * 2017-12-28   Modified station to properly leave backwards and launches in both directions
+ * 2018-02-27   Added argument checks for null 
+ * 2019-01-07   Added a package-private method for querying the block's name
+ */
+public class BlockHelper
+{ 
+  /**
+   * Add a check-block-free condition to the current queue
+   * The current queue is selected using selectFwdConditions() or selectBwdConditions()
+   * @param block The block that will be checked
+   */
+  public void addConditionBlockFree(BlockHelper block)
+  {
+    if (block == null)
+    {
+      System.throwRuntimeException("Invalid argument: block is null");
+    }
+    addLeaveCondition(new BlockHelperCondition(BlockHelperCondition.CONDITION_BLOCK_FREE, block._block, 0, false));
+  }
+  
+  /**
+   * Add a change-and-check-switch condition to the current queue
+   * The current queue is selected using selectFwdConditions() or selectBwdConditions()
+   * @param track The switch trach that will be changed and checked
+   * @param trackDir The switch position that will be changed and checked
+   * @param canPrepareBeforeApproach When this is true, the switch will be changed even before the train has reached the current block. When unsure set to false.
+   */  
+  public void addConditionChangeSwitch(SpecialTrack track, int trackDir, bool canPrepareBeforeApproach)
+  {
+    if (track == null)
+    {
+      System.throwRuntimeException("Invalid argument: track is null");
+    }  
+    addLeaveCondition(new BlockHelperCondition(BlockHelperCondition.CONDITION_CHANGE_SWITCH, track, trackDir, canPrepareBeforeApproach));
+  }
+   
+  /**
+   * Add a wait-some-time condition to the current queue
+   * The current queue is selected using selectFwdConditions() or selectBwdConditions()
+   * @param seconds The delay in seconds that will be waited.
+   */  
+  public void addConditionWait(float seconds)
+  {
+    addLeaveCondition(new BlockHelperCondition(BlockHelperCondition.CONDITION_WAIT, null, seconds, false));
+  }  
+    
+  /**
+   * Set the leave mode to move forward
+   */   
+  public void setLeaveModeMoveFwd()
+  {
+    _leaveMode = LEAVE_MODE_MOVE_FWD;
+  }
+  
+  /**
+   * Set the leave mode to move backward
+   */   
+  public void setLeaveModeMoveBwd()
+  {
+    _leaveMode = LEAVE_MODE_MOVE_BWD;
+  }
+  
+  /**
+   * Set the leave mode to launch forward
+   */   
+  public void setLeaveModeLaunchFwd()
+  {
+    _leaveMode = LEAVE_MODE_LAUNCH_FWD;
+  }
+  
+  /**
+   * Set the leave mode to launch backward
+   */  
+  public void setLeaveModeLaunchBwd()
+  {
+    _leaveMode = LEAVE_MODE_LAUNCH_BWD;
+  }
+  
+  /**
+   * Select the current condition queue for following "addCondition" calls
+   */  
+  public void selectFwdConditions()
+  {
+    _selectConditionsBwd = false; 
+  }
+  
+  /**
+   * Select the current condition queue for following "addCondition" calls
+   */   
+  public void selectBwdConditions()
+  {
+    _selectConditionsBwd = true; 
+  }
+  
+  /////
+  // END OF PUBLIC
+  /////  
+  
+  /**
+   * Create a block helper for an existing station block
+   * @param coaster The coaster the block belongs to
+   * @param name The block name (as specified inside the Editor)
+   * @return Block helper object
+   */
+  static BlockHelper createStationBlock(Coaster coaster, String name)
+  {
+    if (coaster == null)
+    {
+      System.throwRuntimeException("Invalid argument: coaster is null");
+    }
+    if (name == null)
+    {
+      System.throwRuntimeException("Invalid argument: name is null");
+    }
+    Block block = coaster.getBlock(name);
+    if (!checkAndSetInitialBlockState(coaster, block, name))
+    {
+      return null;
+    }
+    
+    return new BlockHelper(block, TYPE_STATION);
+  }
+  
+  /**
+   * Create a block helper for an existing lift block
+   * @param coaster The coaster the block belongs to
+   * @param name The block name (as specified inside the Editor)
+   * @return Block helper object
+   */  
+  static BlockHelper createLiftBlock(Coaster coaster, String name)
+  {
+    if (coaster == null)
+    {
+      System.throwRuntimeException("Invalid argument: coaster is null");
+    }
+    if (name == null)
+    {
+      System.throwRuntimeException("Invalid argument: name is null");
+    }
+    Block block = coaster.getBlock(name);
+    if (!checkAndSetInitialBlockState(coaster, block, name))
+    {
+      return null;
+    }
+    
+    return new BlockHelper(block, TYPE_LIFT);
+  }
+  
+  /**
+   * Create a block helper for an existing brake block
+   * @param coaster The coaster the block belongs to
+   * @param name The block name (as specified inside the Editor)
+   * @return Block helper object
+   */  
+  static BlockHelper createBrakeBlock(Coaster coaster, String name)
+  {
+    if (coaster == null)
+    {
+      System.throwRuntimeException("Invalid argument: coaster is null");
+    }
+    if (name == null)
+    {
+      System.throwRuntimeException("Invalid argument: name is null");
+    }
+    Block block = coaster.getBlock(name);
+    if (!checkAndSetInitialBlockState(coaster, block, name))
+    {
+      return null;
+    }
+    
+    return new BlockHelper(block, TYPE_BRAKE);
+  }
+  
+  /**
+   * Create a block helper for an existing storage block
+   * @param coaster The coaster the block belongs to
+   * @param name The block name (as specified inside the Editor)
+   * @return Block helper object
+   */  
+  static BlockHelper createStorageBlock(Coaster coaster, String name)
+  {
+    if (coaster == null)
+    {
+      System.throwRuntimeException("Invalid argument: coaster is null");
+    }
+    if (name == null)
+    {
+      System.throwRuntimeException("Invalid argument: name is null");
+    }
+    Block block = coaster.getBlock(name);
+    if (!checkAndSetInitialBlockState(coaster, block, name))
+    {
+      return null;
+    }
+    
+    return new BlockHelper(block, TYPE_STORAGE);
+  }    
+ 
+  /**
+   * Needs to be called in Script.onNextFrame()
+   */
+  void process()
+  {
+    if (_mode != MODE_FULL_MANUAL)
+    {
+      switch (_type)
+      {
+      case TYPE_STATION:
+        processStation();
+        break;
+      case TYPE_LIFT:
+        processLift();
+        break;
+      case TYPE_BRAKE:
+        processBrake();
+        break;
+      case TYPE_STORAGE:
+        processStorage();
+        break;
+      }
+      
+      if (_mode == MODE_MANUAL_BLOCK)
+      {
+        updateControlPanel();
+      }
+    }
+  }
+  
+  /**
+   * Needs to be called when the operation mode changes to auto-mode
+   */  
+  void onAutoMode()
+  {
+    if (_mode == MODE_FULL_MANUAL)
+    {
+      // previous mode was full manual, we need to check the new position of the trains now
+      setInitialBlockState(_block);
+    }
+    
+    _mode = MODE_AUTO;
+    updateControlPanel();  
+  }
+  
+  /**
+   * Needs to be called when the operation mode changes to manual-block-mode
+   */  
+  void onManualBlockMode()
+  {
+    if (_mode == MODE_FULL_MANUAL)
+    {
+      // previous mode was full manual, we need to check the new position of the trains now
+      setInitialBlockState(_block);
+    }    
+    _mode = MODE_MANUAL_BLOCK;
+    updateControlPanel();
+  }
+  
+  /**
+   * Needs to be called when the operation mode changes to full-manual-mode
+   */  
+  void onFullManualMode()
+  {
+    _mode = MODE_FULL_MANUAL;
+    updateControlPanel();
+  }
+  
+  /**
+   * Needs to be called when the forward button was pressed
+   */  
+  void onAdvanceFWDButton(Block block)
+  {
+    if (block == _block)
+    {
+      switch (_type)
+      {
+      case TYPE_STORAGE:
+        {
+          Train train = _block.getSection().getTrainOnSection();
+          if (train != null) train.setLashedToTrack(false);
+        }
+        break;
+      case TYPE_STATION:
+        {
+          _block.getSection().setStationLeaving();
+        }
+        break;
+      }
+
+      _block.setState(STATE_BLOCK_LEAVING);
+        
+      setStateForNextBlock(_fwdConditions, STATE_BLOCK_APPROACHING);
+    }
+  }
+  
+  /**
+   * Needs to be called when the backward button was pressed
+   */    
+  void onAdvanceBWDButton(Block block)
+  {
+    if (block == _block)
+    {
+      switch (_type)
+      {
+      case TYPE_STORAGE:
+        {
+          Train train = _block.getSection().getTrainOnSection();
+          if (train != null) train.setLashedToTrack(false);
+        }
+        break;
+      case TYPE_STATION:
+        {
+          _block.getSection().setStationLeaving();
+        }
+        break;        
+      }
+      
+      _block.setState(STATE_BLOCK_LEAVING_BWD);
+        
+      setStateForNextBlock(_bwdConditions, STATE_BLOCK_APPROACHING_BWD);
+    }
+  }
+  
+  /**
+   * Return block's name
+   */
+  String getBlockName()
+  {
+    return _block.getName();
+  }
+  
+  /////
+  // END OF PACKAGE PRIVATE
+  /////
+  
+  private BlockHelper(Block block, int type)
+  {
+    _block = block;
+    _type = type;
+    _mode = MODE_AUTO;
+    _leaveMode = LEAVE_MODE_MOVE_FWD;
+    _oppositeLeaveInManual = false;
+    _selectConditionsBwd = false;
+    _block.setAdvanceFwdVisible(false);
+    _block.setAdvanceBwdVisible(false);
+  }
+  
+  /**
+   * A universal method to process a station block.
+   */
+  private void processStation()
+  {
+    switch (_block.getState())
+    {
+    case STATE_BLOCK_IN_STATION:
+      if (_block.getSection().isStationWaitingForClearBlock())
+      {
+        if (processNextBlockEntering())
+        {
+          _block.getSection().setStationNextBlockClear();
+        }
+      }
+      else if (_block.getSection().isStationWaitingForAdvance())
+      {
+        if (_mode == MODE_MANUAL_BLOCK)
+        {
+          if (processNextBlockEntering())
+          {
+            _block.setState(STATE_BLOCK_WAIT_FOR_ADVANCE);
+          }
+          else
+          {
+            _block.getSection().setStationNextBlockOccupied();
+          }
+        }
+        else if (_mode == MODE_AUTO)
+        {
+          if (processNextBlockEntering())
+          {
+            acknoledgeNextBlockEnteringInAutoMode();
+            
+            _block.setState(isBackwardsLeaveInAutoMode() ? STATE_BLOCK_LEAVING_BWD : STATE_BLOCK_LEAVING);
+            _block.getSection().setStationLeaving();
+          }
+          else
+          {
+            _block.getSection().setStationNextBlockOccupied();
+          }
+        }
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_ADVANCE:
+       if ((_mode != MODE_MANUAL_BLOCK) || !_block.getSection().isStationWaitingForAdvance() || !processNextBlockEntering())
+       {
+         _block.setState(STATE_BLOCK_IN_STATION);
+       }
+       break;
+    case STATE_BLOCK_LEAVING:
+      if (_block.getNumberOfTrainsOnBlock() != 0)
+      {
+        // Train is still on the block
+        _block.getSection().setBrakesTrim();
+        if (_leaveMode == LEAVE_MODE_LAUNCH_FWD)
+        {
+          _block.getSection().setTransportsLaunchFwdOn();
+          
+        }
+        else
+        {
+          _block.getSection().setTransportsStandardFwdOn();
+        }
+      }
+      else
+      {
+        // Train has left the block
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+    case STATE_BLOCK_LEAVING_BWD:
+      if (_block.getNumberOfTrainsOnBlock() != 0)
+      {
+        // Train is still on the block
+        _block.getSection().setBrakesTrim();
+        if (_leaveMode == LEAVE_MODE_LAUNCH_BWD)
+        {
+          _block.getSection().setTransportsLaunchBwdOn();
+          
+        }
+        else
+        {
+          _block.getSection().setTransportsStandardBwdOn();
+        }
+      }
+      else
+      {
+        // Train has left the block
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;      
+    case STATE_BLOCK_FREE:
+      _block.getSection().setTransportsOff();
+      _block.getSection().setBrakesOn();
+      break;
+    case STATE_BLOCK_APPROACHING:
+    case STATE_BLOCK_APPROACHING_BWD:
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.getSection().setStationEntering();
+        _block.setState(STATE_BLOCK_IN_STATION);
+      }
+      else
+      {
+        _block.getSection().setBrakesOff();
+        _block.getSection().setTransportsOff();      
+      }
+      break;
+    }  
+  }
+  
+  /**
+   * Process the lift block
+   */
+  private void processLift()
+  {
+    switch (_block.getState())
+    {
+    case STATE_BLOCK_FREE:
+      _block.getSection().setLiftFwdIdleOn();
+      break;
+    case STATE_BLOCK_APPROACHING:
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER);
+      }
+      else
+      {
+        _block.getSection().setLiftFwdIdleOn();
+      }
+      break;
+    case STATE_BLOCK_BEFORE_TRIGGER:
+      _block.getSection().setLiftFwdOn();
+      if (_block.getSection().isTrainBehindLiftTrigger())
+      {
+        _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR); 
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_ADVANCE:
+      if (_mode == MODE_AUTO)
+      {
+        _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+      }
+      else
+      {
+        if (!processNextBlockEntering())
+        {
+          _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+        }
+        _block.getSection().setLiftOff();
+      }
+      break;
+    case STATE_BLOCK_LEAVING:
+      _block.getSection().setLiftFwdOn();
+      if (_block.getNumberOfTrainsOnBlock() == 0)
+      {
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_CLEAR:
+      if (!_block.getSection().isTrainBehindLiftTrigger())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER);
+      }
+      else
+      {
+        if (processNextBlockEntering())
+        {
+          if (_mode == MODE_AUTO)
+          {
+            acknoledgeNextBlockEnteringInAutoMode();
+            
+            _block.setState(STATE_BLOCK_LEAVING);
+          }
+          else
+          {
+            _block.getSection().setLiftOff();
+            _block.setState(STATE_BLOCK_WAIT_FOR_ADVANCE);
+          }
+        }
+        else
+        {
+          _block.getSection().setLiftOff();
+        }
+      }
+      break;
+    }      
+  }
+  
+  /**
+   * Process a brake block (with optional transports)
+   */
+  private void processBrake()
+  {
+    switch (_block.getState())
+    {
+    case STATE_BLOCK_FREE:
+      _block.getSection().setTransportsOff();
+      _block.getSection().setBrakesOn();
+      break;
+    case STATE_BLOCK_APPROACHING:
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER);
+      }
+      else
+      {
+        if (prepareNextBlockEntering())
+        {
+          _block.getSection().setBrakesOff();
+        }
+        else
+        {
+          _block.getSection().setBrakesOn();
+        }
+        _block.getSection().setTransportsOff();
+      }
+      break;
+    case STATE_BLOCK_APPROACHING_BWD:
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER_BWD);
+      }
+      else
+      {
+        if (prepareNextBlockEntering())
+        {
+          _block.getSection().setBrakesOff();
+        }
+        else
+        {
+          _block.getSection().setBrakesOn();
+        }
+        _block.getSection().setTransportsOff();
+      }
+      break;      
+    case STATE_BLOCK_BEFORE_TRIGGER:
+      prepareNextBlockEntering();
+      _block.getSection().setBrakesTrim();
+      _block.getSection().setTransportsStandardFwdDependingOnBrake();
+      if (_block.getSection().isTrainBehindBrakeTrigger())
+      {
+        _block.setState(STATE_BLOCK_BEHIND_TRIGGER); 
+      }
+      break;
+    case STATE_BLOCK_BEFORE_TRIGGER_BWD:
+      prepareNextBlockEntering();
+      _block.getSection().setBrakesTrim();
+      _block.getSection().setTransportsStandardBwdDependingOnBrake();
+      if (_block.getSection().isTrainBeforeBrakeTrigger())
+      {
+        _block.setState(STATE_BLOCK_BEHIND_TRIGGER); 
+      }
+      break;      
+    case STATE_BLOCK_BEHIND_TRIGGER:
+      if (_mode == MODE_AUTO)
+      {
+        if (processNextBlockEntering())
+        {
+          acknoledgeNextBlockEnteringInAutoMode();
+          
+          _block.setState(isBackwardsLeaveInAutoMode() ? STATE_BLOCK_LEAVING_BWD : STATE_BLOCK_LEAVING);
+        }
+        else
+        {
+          _block.getSection().setTransportsOff();
+          _block.getSection().setBrakesOn();
+        }
+      }
+      else if (_mode == MODE_MANUAL_BLOCK)
+      {
+        if (processNextBlockEntering())
+        {
+          _block.setState(STATE_BLOCK_WAIT_FOR_ADVANCE);
+        }
+        else
+        {
+          _block.getSection().setTransportsOff();
+          _block.getSection().setBrakesOn();
+        }
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_ADVANCE:
+      if (_mode == MODE_AUTO)
+      {
+        _block.setState(STATE_BLOCK_BEHIND_TRIGGER);
+      }
+      else if (_mode == MODE_MANUAL_BLOCK)
+      {
+        if (!processNextBlockEntering())
+        {
+          _block.setState(STATE_BLOCK_BEHIND_TRIGGER);
+        }  
+        else
+        {
+          _block.getSection().setTransportsOff();
+          _block.getSection().setBrakesOn();
+        }
+      }
+      break;
+    case STATE_BLOCK_LEAVING:
+      _block.getSection().setBrakesTrim();
+
+      if (_leaveMode == LEAVE_MODE_LAUNCH_FWD)
+      {
+        _block.getSection().setTransportsLaunchFwdOn();
+      }
+      else
+      {
+        _block.getSection().setTransportsStandardFwdOn();
+      }
+      
+      if (_block.getNumberOfTrainsOnBlock() == 0)
+      {
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+      
+    case STATE_BLOCK_LEAVING_BWD:
+      _block.getSection().setBrakesTrim();
+      
+      if (_leaveMode == LEAVE_MODE_LAUNCH_BWD)
+      {
+        _block.getSection().setTransportsLaunchBwdOn();
+      }
+      else
+      {
+        _block.getSection().setTransportsStandardBwdOn();
+      }
+
+      if (_block.getNumberOfTrainsOnBlock() == 0)
+      {
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+      
+    case STATE_BLOCK_WAIT_FOR_CLEAR:
+      if (_block.getSection().isTrainBehindBrakeTrigger())
+      {
+        _block.setState(STATE_BLOCK_BEHIND_TRIGGER);
+      }
+      else
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER);
+      }
+      break;
+    }
+  }  
+  
+  private void processStorage()
+  {
+    switch (_block.getState())
+    {
+    case STATE_BLOCK_FREE:
+      _block.getSection().setTransportsOff();
+      break;
+    case STATE_BLOCK_APPROACHING:
+      _block.getSection().setTransportsOff();
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER);
+      }
+      break;        
+    case STATE_BLOCK_APPROACHING_BWD:
+      _block.getSection().setTransportsOff();
+      if (_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_BEFORE_TRIGGER_BWD);
+      }
+      break;
+    case STATE_BLOCK_BEFORE_TRIGGER:
+      _block.getSection().setTransportsStandardFwdOn();
+      if (_block.getSection().isTrainBehindCenterOfSection())
+      {
+        _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+      }
+      break;
+    case STATE_BLOCK_BEFORE_TRIGGER_BWD:
+      _block.getSection().setTransportsStandardBwdOn();
+      if (_block.getSection().isTrainBeforeCenterOfSection())
+      {
+        _block.getSection().getTrainOnSection().setLashedToTrack(true);
+        _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_CLEAR:
+      _block.getSection().setTransportsOff();
+      if (_mode == MODE_MANUAL_BLOCK)
+      {
+        if (processNextBlockEntering())
+        {
+          _block.setState(STATE_BLOCK_WAIT_FOR_ADVANCE);
+        }
+      }
+      break;
+    case STATE_BLOCK_WAIT_FOR_ADVANCE:
+      _block.getSection().setTransportsOff();
+      if ((_mode != MODE_MANUAL_BLOCK) || !processNextBlockEntering())
+      {
+        _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+      }
+      break;
+    case STATE_BLOCK_LEAVING:
+      _block.getSection().setTransportsStandardFwdOn();
+      if (!_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+    case STATE_BLOCK_LEAVING_BWD:
+      _block.getSection().setTransportsStandardBwdOn();
+      if (!_block.getSection().isTrainOnSection())
+      {
+        _block.setState(STATE_BLOCK_FREE);
+      }
+      break;
+    }      
+  }
+  
+  private void addLeaveCondition(BlockHelperCondition cond)
+  {
+    if (_selectConditionsBwd)
+    {
+      if (_bwdConditions == null)
+      {
+        _bwdConditions = new nlvm.util.Vector(); 
+        _block.setAdvanceBwdVisible(true);
+      }
+      _bwdConditions.addElement(cond);  
+    }
+    else
+    {
+      if (_fwdConditions == null)
+      {
+        _fwdConditions = new nlvm.util.Vector(); 
+        _block.setAdvanceFwdVisible(true);
+      }
+      _fwdConditions.addElement(cond);
+    }
+    
+    _oppositeLeaveInManual = _fwdConditions != null && _bwdConditions != null;
+  }
+  
+  private static void setStateForNextBlock(nlvm.util.Vector conditions, int state)
+  {
+    if (conditions != null)
+    {
+      for (int i=conditions.size()-1; i>=0; --i)
+      {
+        BlockHelperCondition cond = (BlockHelperCondition)conditions.elementAt(i);
+        Block block = cond.queryBlock();
+        if (block != null)
+        {
+          block.setState(state); 
+        }
+      }
+    }
+  }
+  
+  
+  /**
+   * This method checks if the next block can be entered and tries to set the corresponding track switch (if there is any) in auto-mode .
+   */
+  private bool prepareNextBlockEntering()
+  {
+    if (_mode == MODE_AUTO)
+    {
+      return processConditions(isBackwardsLeaveInAutoMode() ? _bwdConditions : _fwdConditions, true, true);
+    }
+    return false;
+  }
+  
+  private bool processNextBlockEntering()
+  {
+    if (_mode == MODE_AUTO)
+    {
+      return processConditions(isBackwardsLeaveInAutoMode() ? _bwdConditions : _fwdConditions, false, true);
+    }
+    else if (_mode == MODE_MANUAL_BLOCK)
+    {
+      bool canLeaveForward = (_oppositeLeaveInManual && (_leaveMode != LEAVE_MODE_NONE)) || (_leaveMode == LEAVE_MODE_MOVE_FWD) || (_leaveMode == LEAVE_MODE_LAUNCH_FWD);      
+      
+      if (canLeaveForward && processConditions(_fwdConditions, false, false))
+      {
+        return true;
+      }
+
+      bool canLeaveBackward = (_oppositeLeaveInManual && (_leaveMode != LEAVE_MODE_NONE)) || (_leaveMode == LEAVE_MODE_MOVE_BWD) || (_leaveMode == LEAVE_MODE_LAUNCH_BWD); 
+
+      if (canLeaveBackward && processConditions(_bwdConditions, false, false))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private void acknoledgeNextBlockEnteringInAutoMode()
+  {
+    if (_mode == MODE_AUTO)
+    {
+      bool backwards = isBackwardsLeaveInAutoMode();
+      acknoledgeNextBlock(backwards ? _bwdConditions : _fwdConditions, backwards);
+    }
+  }
+  
+  private bool isBackwardsLeaveInAutoMode()
+  {
+    return _leaveMode ==  LEAVE_MODE_MOVE_BWD || _leaveMode == LEAVE_MODE_LAUNCH_BWD;
+  }
+  
+  private bool processConditions(nlvm.util.Vector conditions, bool prepare, bool activeSwitch)
+  {
+    bool ret = false;
+    if (conditions != null)
+    {
+      ret = true;
+      int c = conditions.size();
+      for (int i=0; i<c; ++i)
+      {
+        BlockHelperCondition cond = (BlockHelperCondition)conditions.elementAt(i);
+        if (!cond.isTrue(prepare, activeSwitch))
+        {
+          ret = false;
+          break;
+        }
+      }
+    }
+    return ret;    
+  }
+  
+  private void acknoledgeNextBlock(nlvm.util.Vector conditions, bool backwards)
+  {
+    if (conditions != null)
+    {
+      int c = conditions.size();
+      for (int i=0; i<c; ++i)
+      {
+        BlockHelperCondition cond = (BlockHelperCondition)conditions.elementAt(i);
+        cond.acknoledge(backwards);
+      }
+    }
+  }
+  
+  private void updateControlPanel()
+  {
+    bool enable = (_mode == MODE_MANUAL_BLOCK) && (_block.getState() == STATE_BLOCK_WAIT_FOR_ADVANCE);
+    
+    if (_fwdConditions != null)
+    {
+      _block.setAdvanceFwdEnabled(enable && processConditions(_fwdConditions, false, false));
+    }
+    if (_bwdConditions != null)
+    {            
+      _block.setAdvanceBwdEnabled(enable && processConditions(_bwdConditions, false, false));
+    }
+  }
+      
+  /**
+   * This method checks if a block was found and registers all possible states to the block and checks if a train is on the block.
+   */
+  private static bool checkAndSetInitialBlockState(Coaster coaster, Block block, String name)
+  {
+    if (block == null)
+    {
+      System.err.println("Block script for " + coaster.getName() + ": Block '" + name + "' not found");
+      return false;
+    }
+    registerBlockStates(block);
+    setInitialBlockState(block);
+    return true;
+  }
+ 
+  /**
+   * This method checks if a train is on the block or not and sets the corresponding state.
+   */
+  private static void setInitialBlockState(Block block)
+  {
+    if (block.getNumberOfTrainsOnBlock() > 0)
+    {
+      if (block.getSection().isStation())
+      {
+        block.setState(STATE_BLOCK_IN_STATION);
+      }
+      else
+      {
+        block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
+      }
+    }
+    else
+    {
+      block.setState(STATE_BLOCK_FREE);
+    }     	  
+  }
+  
+  /**
+   * Adds labels for each possible state to a block.
+   * The labels are recommended for display on the control panel, there is no other purpose.
+   */ 
+  private static void registerBlockStates(Block block)
+  {
+    // register the states, so that some usefull text will be shown on the block tab of the control panel
+    block.registerState(STATE_BLOCK_FREE, "Free", Block.LAMP_OFF);
+    
+    block.registerState(STATE_BLOCK_APPROACHING, "Approaching", Block.LAMP_FLASHING);
+    block.registerState(STATE_BLOCK_APPROACHING_BWD, "Approaching", Block.LAMP_FLASHING);
+    
+    block.registerState(STATE_BLOCK_LEAVING, "Leaving", Block.LAMP_ON);
+    block.registerState(STATE_BLOCK_LEAVING_BWD, "Leaving", Block.LAMP_ON);
+    
+    block.registerState(STATE_BLOCK_BEFORE_TRIGGER, "Before Trigger", Block.LAMP_ON);
+    block.registerState(STATE_BLOCK_BEFORE_TRIGGER_BWD, "Before Trigger", Block.LAMP_ON);
+    
+    block.registerState(STATE_BLOCK_BEHIND_TRIGGER, "Behind Trigger", Block.LAMP_ON);
+    
+    block.registerState(STATE_BLOCK_WAITING, "Waiting", Block.LAMP_ON);
+    block.registerState(STATE_BLOCK_WAIT_FOR_CLEAR, "Waiting for Clear Block", Block.LAMP_ON);
+    block.registerState(STATE_BLOCK_WAIT_FOR_ADVANCE, "Waiting for Advance", Block.LAMP_ON);
+
+    block.registerState(STATE_BLOCK_IN_STATION, "In Station", Block.LAMP_ON);
+  }
+ 
+    
+  // Declare some constants...
+  // These constants represents our block states, those values are user defineable
+  static final int STATE_BLOCK_FREE = 0;
+  static final int STATE_BLOCK_APPROACHING = 1;
+  
+  static final int STATE_BLOCK_LEAVING = 2;
+  static final int STATE_BLOCK_BEFORE_TRIGGER = 3;
+  static final int STATE_BLOCK_BEHIND_TRIGGER = 4;
+  static final int STATE_BLOCK_WAITING = 5;
+  static final int STATE_BLOCK_WAIT_FOR_CLEAR = 6; 
+  static final int STATE_BLOCK_WAIT_FOR_ADVANCE = 7; 
+  static final int STATE_BLOCK_IN_STATION = 8;
+  static final int STATE_BLOCK_APPROACHING_BWD = 9;
+  static final int STATE_BLOCK_LEAVING_BWD = 10;
+  static final int STATE_BLOCK_BEFORE_TRIGGER_BWD = 11;  
+
+  // The coaster operation mode  
+  private static final int MODE_AUTO = 0;
+  private static final int MODE_MANUAL_BLOCK = 1;
+  private static final int MODE_FULL_MANUAL = 2;
+
+  // The type of block
+  private static final int TYPE_STATION = 0;
+  private static final int TYPE_LIFT = 1;
+  private static final int TYPE_BRAKE = 2;
+  private static final int TYPE_STORAGE = 3;
+  
+  private static final int LEAVE_MODE_NONE = 0;
+  private static final int LEAVE_MODE_MOVE_FWD = 1;
+  private static final int LEAVE_MODE_MOVE_BWD = 2;
+  private static final int LEAVE_MODE_LAUNCH_FWD = 3;
+  private static final int LEAVE_MODE_LAUNCH_BWD = 4;
+  
+  private Block _block;
+      
+  private int _mode;
+  
+  private int _type;
+  
+  private int _leaveMode;
+  private bool _oppositeLeaveInManual;
+  
+  private bool _selectConditionsBwd;
+  
+  private nlvm.util.Vector _fwdConditions;
+  private nlvm.util.Vector _bwdConditions;
+  
+}
+

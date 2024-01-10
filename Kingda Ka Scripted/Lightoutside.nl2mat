@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <custommaterial>
+        <diffuse r="0.447059" g="0.670588" b="0.584314"/>
+        <ambient r="0.447059" g="0.670588" b="0.584314"/>
+      </custommaterial>
+      <rgbgen mode="lighting"/>
+    </renderpass>
+  </material>
+</root>

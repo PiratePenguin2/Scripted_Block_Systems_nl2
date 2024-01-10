@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="zumanjaro.lwo"/>
+    <script>
+      <classpath></classpath>
+      <class>Zumanjaro</class>
+    </script>
+    <materialpath name="Color_B0">Tower.nl2mat</materialpath>
+    <materialpath name="Color_C0">Railings.nl2mat</materialpath>
+    <materialpath name="Color_E0">Body.nl2mat</materialpath>
+    <materialpath name="Color_F1">Restraints.nl2mat</materialpath>
+    <lightsource range="50" intensity="1" type="point">
+      <name>CameraFlash</name>
+      <parent>Tower</parent>
+      <position x="-0.46" y="195.15" z="-3.9"/>
+      <color r="1" g="1" b="1"/>
+      <halo zoffset="0" intensity="1" size="1"/>
+    </lightsource>
+  </sceneobject>
+</root>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="base:scene objects/Lights/black_spot_lamp.3DS"/>
+    <description>Simple spotlight with halo and volume</description>
+    <preview>base:scene objects/Lights/spot1preview.jpg</preview>
+    <param allowscale="false"/>
+    <script>
+      <classpath>base:scene objects/Lights</classpath>
+      <class>LightScript</class>
+    </script>
+    <materialpath name="spotbox">base:scene objects/Lights/lamp.nl2mat</materialpath>
+    <lightsource range="457.2" intensity="1" type="spot" spotcutoff="20" spotexponent="5">
+      <direction x="0" y="0" z="-1"/>
+      <upvector x="0" y="1" z="0"/>
+      <name>thelight</name>
+      <position x="0" y="0" z="-0.24384"/>
+      <color r="1" g="1" b="1"/>
+      <halo zoffset="0" intensity="1" size="1"/>
+      <volume range="15.24" intensity="1" size="0.2286"/>
+    </lightsource>
+  </sceneobject>
+</root>

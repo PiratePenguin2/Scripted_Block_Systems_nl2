@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <properties>
+    <property>
+      <name>overlaycenterx</name>
+      <value>50</value>
+    </property>
+    <property>
+      <name>overlaycentery</name>
+      <value>0</value>
+    </property>
+    <property>
+      <name>overlaycenterz</name>
+      <value>-500</value>
+    </property>
+    <property>
+      <name>overlayimagepath</name>
+      <value>/B:/My Documents/com.nolimitscoaster.nolimits2/Kingda Ka/kingdakaoverlay.jpg</value>
+    </property>
+    <property>
+      <name>overlayscale</name>
+      <value>0.258788</value>
+    </property>
+    <property>
+      <name>overlaytransparency</name>
+      <value>128</value>
+    </property>
+  </properties>
+</root>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <custommaterial>
+        <diffuse r="0.364706" g="0.501961" b="0.670588"/>
+        <specular r="0.752941" g="0.960784" b="0.854902"/>
+      </custommaterial>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <materialtexture/>
+      </texunit>
+    </renderpass>
+  </material>
+</root>

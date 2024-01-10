@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <renderpass>
+      <transparency mode="opaque"/>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+        <specular r="1" g="1" b="1"/>
+        <shininess exponent="42"/>
+      </custommaterial>
+      <reflection fresnelconst="0.2" fresnelvar="0.6"/>
+      <rgbgen mode="lighting"/>
+      <texunit>
+        <map>BronzeCopper0020_21_S.jpg</map>
+        <tcgen mode="base"/>
+      </texunit>
+    </renderpass>
+    <option noeditorrender="true"/>
+  </material>
+</root>

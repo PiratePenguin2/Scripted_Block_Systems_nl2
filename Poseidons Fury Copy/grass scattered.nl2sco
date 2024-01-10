@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <sceneobject>
+    <model path="grass_scatt.3ds">
+      <clip distance="137.16"/>
+    </model>
+    <preview>gs.tga</preview>
+    <param baseoffsety="-0.18288"/>
+    <param randomroty="true"/>
+    <param randomrotvariationy="360"/>
+    <param basescalex="3"/>
+    <param basescaley="4"/>
+    <param basescalez="3"/>
+    <param randomscalex="true"/>
+    <param randomscalevariationx="0.6"/>
+    <param randomscaley="true"/>
+    <param randomscalevariationy="0.5"/>
+    <param randomscalez="true"/>
+    <param randomscalevariationz="0.6"/>
+    <param lockonterrain="true"/>
+    <param adjustterrainslope="true"/>
+    <param force3dssmoothing="true"/>
+    <param autoplant="true"/>
+    <param autoplantspacingdist="1.2192"/>
+    <param autoplantspacingjitter="1"/>
+    <param autoplantmaxdistvariation="0.4"/>
+    <materialpath name="gs.tga">grass.nl2mat</materialpath>
+  </sceneobject>
+</root>

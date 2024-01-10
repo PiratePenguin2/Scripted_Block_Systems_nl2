@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <material>
+    <description>Metal with color of user slot 0</description>
+    <preview>base:data/materials/metal/metal_a_preview.jpg</preview>
+    <renderpass>
+      <shadercore>Specular = Tex2;
+Result = Mul(tex0, entity3);</shadercore>
+      <transparency mode="opaque"/>
+      <custommaterial>
+        <diffuse r="1" g="1" b="1"/>
+        <ambient r="1" g="1" b="1"/>
+        <specular r="0.0941177" g="0.0941177" b="0.0941177"/>
+        <shininess exponent="56.3582"/>
+      </custommaterial>
+      <reflection fresnelconst="-0.1" fresnelvar="0.4"/>
+      <rgbgen mode="bumplighting"/>
+      <texunit>
+        <map>base:data/materials/metal/Metal_A.png</map>
+        <tcgen mode="base"/>
+        <tcmod mode="scale" scales="3" scalet="3"/>
+      </texunit>
+      <texunit>
+        <map>base:data/materials/metal/Metal_A_Normal.png</map>
+        <bump mode="normalgloss"/>
+        <tcgen mode="base"/>
+        <tcmod mode="scale" scales="3" scalet="3"/>
+      </texunit>
+      <texunit>
+        <map>base:data/materials/metal/Metal_A_Spec.jpg</map>
+        <tcgen mode="base"/>
+        <tcmod mode="scale" scales="3" scalet="3"/>
+      </texunit>
+    </renderpass>
+    <option noeditorrender="true"/>
+  </material>
+</root>
