@@ -416,7 +416,7 @@ public class BlockHelper
         if (_leaveMode == LEAVE_MODE_LAUNCH_FWD)
         {
           _block.getSection().setTransportsLaunchFwdOn();
-          
+          _block.getSection().setBrakesOff();
         }
         else
         {

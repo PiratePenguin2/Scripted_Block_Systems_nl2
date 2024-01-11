@@ -1,6 +1,6 @@
 import blockhelper.*;
 import com.nolimitscoaster.*;
-
+ 
 public class SimpleSquare extends Script{
     private BlockHelperController blockHelperController;
 

@@ -4,7 +4,7 @@ import com.nolimitscoaster.*;
 
 
 /**
- * Helper class for simplifying implementation of block scripts
+ * Helper class for simplifying implementation of block scripts 
  * It maintains the list of all blocks and also functions as a
  * BlockHelper factory.
  *

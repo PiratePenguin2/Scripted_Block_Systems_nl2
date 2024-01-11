@@ -26,8 +26,8 @@ public class KingdaKaBlocks extends Script{
         BlockHelper leftStorage1Block = blockHelperController.createStorageBlock("Left Storage 1");
         BlockHelper leftStorage2Block = blockHelperController.createStorageBlock("Left Storage 2");
 
-        SpecialTrack forkSwitch = coaster.getSpecialTrack("Fork Switch");
-        SpecialTrack mergeSwitch = coaster.getSpecialTrack("Merge Switch");
+        SpecialTrack forkSwitch = coaster.getSpecialTrack("Fork");
+        SpecialTrack mergeSwitch = coaster.getSpecialTrack("Merge");
         SpecialTrack transferSwitch = coaster.getSpecialTrack("Transfer Switch");
 
         System.out.println("Testing");
@@ -39,7 +39,7 @@ public class KingdaKaBlocks extends Script{
         rightLoadBlock.setLeaveModeMoveFwd();
         rightLoadBlock.selectFwdConditions();
         rightLoadBlock.addConditionBlockFree(mergeBlock);
-        rightLoadBlock.addConditionChangeSwitch(mergeSwitch, 1, true);
+        rightLoadBlock.addConditionChangeSwitch(mergeSwitch, 1, false);
         
     //RightUnload
         rightUnloadBlock.setLeaveModeMoveFwd();
@@ -61,7 +61,7 @@ public class KingdaKaBlocks extends Script{
         mergeBlock.setLeaveModeMoveFwd();
         mergeBlock.selectFwdConditions();
         mergeBlock.addConditionBlockFree(transferBlock);
-        //mergeBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+        mergeBlock.addConditionChangeSwitch(transferSwitch, 2, false);
 
     //Transfer
         transferBlock.setLeaveModeMoveFwd();    //Launch
@@ -71,15 +71,16 @@ public class KingdaKaBlocks extends Script{
         
         transferBlock.selectFwdConditions();    //Right Storage
         transferBlock.addConditionBlockFree(rightStorage2Block);
-        transferBlock.addConditionChangeSwitch(transferSwitch, 1, false);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
 
         transferBlock.selectFwdConditions();    //Left Storage
         transferBlock.addConditionBlockFree(leftStorage2Block);
-        transferBlock.addConditionChangeSwitch(transferSwitch, 0, false);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
 
     //Launch
         launchBlock.setLeaveModeLaunchFwd();
         launchBlock.selectFwdConditions();
+        launchBlock.addConditionWait(5);
         launchBlock.addConditionBlockFree(finalBrakeBlock);
 
     //Final Brake
