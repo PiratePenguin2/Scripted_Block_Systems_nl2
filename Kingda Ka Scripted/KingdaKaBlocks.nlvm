@@ -18,8 +18,8 @@ public class KingdaKaBlocks extends Script{
         BlockHelper launchBlock = blockHelperController.createBrakeBlock("Launch");
 
         BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("Final Brake");
-        BlockHelper rightHoldingBrakeBlock = blockHelperController.createBrakeBlock("Right Holding Brake");
-        BlockHelper leftHoldingBrakeBlock = blockHelperController.createBrakeBlock("Left Holding Brake");
+        //BlockHelper rightHoldingBrakeBlock = blockHelperController.createBrakeBlock("Right Holding Brake");
+        //BlockHelper leftHoldingBrakeBlock = blockHelperController.createBrakeBlock("Left Holding Brake");
 
         BlockHelper rightStorage1Block = blockHelperController.createStorageBlock("Right Storage 1");
         BlockHelper rightStorage2Block = blockHelperController.createStorageBlock("Right Storage 2");
@@ -67,15 +67,15 @@ public class KingdaKaBlocks extends Script{
         transferBlock.setLeaveModeMoveFwd();    //Launch
         transferBlock.selectFwdConditions();
         transferBlock.addConditionBlockFree(launchBlock);
-        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+        //transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
         
-        transferBlock.selectFwdConditions();    //Right Storage
-        transferBlock.addConditionBlockFree(rightStorage2Block);
-        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+        //transferBlock.selectFwdConditions();    //Right Storage
+        //transferBlock.addConditionBlockFree(rightStorage2Block);
+        //transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
 
-        transferBlock.selectFwdConditions();    //Left Storage
-        transferBlock.addConditionBlockFree(leftStorage2Block);
-        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+        //transferBlock.selectFwdConditions();    //Left Storage
+        //transferBlock.addConditionBlockFree(leftStorage2Block);
+        //transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
 
     //Launch
         launchBlock.setLeaveModeLaunchFwd();
@@ -86,14 +86,15 @@ public class KingdaKaBlocks extends Script{
     //Final Brake
         finalBrakeBlock.setLeaveModeMoveFwd();
         finalBrakeBlock.selectFwdConditions();
-        finalBrakeBlock.addConditionBlockFree(rightHoldingBrakeBlock);
-        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 1, true);
-
-        finalBrakeBlock.setLeaveModeMoveFwd();
-        finalBrakeBlock.selectFwdConditions();
-        finalBrakeBlock.addConditionBlockFree(leftHoldingBrakeBlock);
         finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 0, true);
-
+        finalBrakeBlock.addConditionBlockFree(leftUnloadBlock);    
+        
+        //finalBrakeBlock.setLeaveModeMoveFwd();
+        //finalBrakeBlock.selectFwdConditions();
+        //finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 1, true);
+        //finalBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+    
+        /*
     //Right Holding Brake
         rightHoldingBrakeBlock.setLeaveModeMoveFwd();
         rightHoldingBrakeBlock.selectFwdConditions();
@@ -102,7 +103,7 @@ public class KingdaKaBlocks extends Script{
     //Left Holding Brake
         leftHoldingBrakeBlock.setLeaveModeMoveFwd();
         leftHoldingBrakeBlock.selectFwdConditions();
-        leftHoldingBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+        leftHoldingBrakeBlock.addConditionBlockFree(leftUnloadBlock);  */
 
     /*------------------*\
     |*      Storage     *|
