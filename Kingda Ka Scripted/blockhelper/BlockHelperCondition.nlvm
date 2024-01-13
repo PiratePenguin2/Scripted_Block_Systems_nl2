@@ -8,6 +8,10 @@ import com.nolimitscoaster.*;
  */
 public class BlockHelperCondition
 {
+  //private int mergeSwitchState = (int) mergeSwitch.getSpecialTrack();
+
+  private int forkSwitchState = (int) forkSwitch.getSpecialTrack();
+  //private int forkSwitchCondition = 
 
   BlockHelperCondition(int type, Object object, double param, bool canPrepare)
   {
@@ -15,6 +19,7 @@ public class BlockHelperCondition
     _object = object;
     _param = param;
     _canPrepare = canPrepare;
+    forkSwitchState = (int) forkSwitch.getSpecialTrack();
   }
   
   bool isTrue(bool prepare, bool activeSwitch)
@@ -31,7 +36,7 @@ public class BlockHelperCondition
     case CONDITION_CHANGE_SWITCH:
       {
         SpecialTrack track = (SpecialTrack)_object;
-        if (activeSwitch && (!prepare || _canPrepare))
+        if (activeSwitch && (!prepare || _canPrepare) && forkSwitchState != -1) //Altered to fix dual station problem
         {
           track.setSwitchDirection((int)_param);
         }
@@ -84,6 +89,8 @@ public class BlockHelperCondition
   static final int CONDITION_CHANGE_SWITCH = 1;
   static final int CONDITION_IS_SWITCH = 2;
   static final int CONDITION_WAIT = 3;
+
+  //static final int CONDITION_WAIT = 3;
   
   private int _type;
   private Object _object;

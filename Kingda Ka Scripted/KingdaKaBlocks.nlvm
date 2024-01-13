@@ -86,13 +86,13 @@ public class KingdaKaBlocks extends Script{
     //Final Brake
         finalBrakeBlock.setLeaveModeMoveFwd();
         finalBrakeBlock.selectFwdConditions();
-        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 0, true);
-        finalBrakeBlock.addConditionBlockFree(leftUnloadBlock);    
+        finalBrakeBlock.addConditionBlockFree(leftUnloadBlock);   
+        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 0, false); 
         
-        //finalBrakeBlock.setLeaveModeMoveFwd();
-        //finalBrakeBlock.selectFwdConditions();
-        //finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 1, true);
-        //finalBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(rightUnloadBlock);
+        finalBrakeBlock.addConditionChangeSwitch(forkSwitch, 1, false);
     
         /*
     //Right Holding Brake
