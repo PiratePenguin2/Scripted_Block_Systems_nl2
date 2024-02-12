@@ -11,20 +11,12 @@ public class PT_STRYKER extends Script{
         BlockHelper stationBlock = blockHelperController.createStationBlock("Station");
 
         BlockHelper swingBrakeBlock = blockHelperController.createBrakeBlock("SwingBrake");
+        BlockHelper show1Block = blockHelperController.createBrakeBlock("Show1");
+
+        BlockHelper show2Block = blockHelperController.createBrakeBlock("Show2");
         BlockHelper swingLaunchBlock = blockHelperController.createBrakeBlock("SwingLaunch");
 
         BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("FinalBrake");
-
-
-        BlockHelper transferBoostBlock = blockHelperController.createBrakeBlock("TransferBoost");
-        BlockHelper lift1Block = blockHelperController.createLiftBlock("Lift1");
-
-        BlockHelper preLift2Block = blockHelperController.createBrakeBlock("PreLift2");
-        BlockHelper lift2Block = blockHelperController.createLiftBlock("Lift2");
-
-        BlockHelper ready1Block = blockHelperController.createBrakeBlock("Ready1");
-        BlockHelper ready2Block = blockHelperController.createBrakeBlock("Ready2");
-
 
         //BlockHelper storage1Block = blockHelperController.createStorageBlock("Storage1");
         //BlockHelper storage2Block = blockHelperController.createStorageBlock("Storage2");
@@ -34,48 +26,41 @@ public class PT_STRYKER extends Script{
         SpecialTrack swingLaunchSwitch = coaster.getSpecialTrack("SwingLaunchSwitch");    //Default 0/1
 
 
-    //Unload
-        unloadBlock.setLeaveModeMoveFwd();
-        unloadBlock.selectFwdConditions();
-        unloadBlock.addConditionBlockFree(loadBlock);
-    //Load
-        loadBlock.setLeaveModeMoveFwd();
-        loadBlock.selectFwdConditions();
-        loadBlock.addConditionBlockFree(transferBoostBlock);
+    //Station
+        stationBlock.setLeaveModeMoveFwd();
+        stationBlock.selectFwdConditions();
+        stationBlock.addConditionBlockFree(swingBrakeBlock);
+        stationBlock.addConditionChangeSwitch(swingBrakeSwitch, 1, true);
 
-    //TransferBoost
-        transferBoostBlock.setLeaveModeMoveFwd();
-        transferBoostBlock.selectFwdConditions();
-        transferBoostBlock.addConditionBlockFree(lift1Block);
-        //transferBoostBlock.addConditionChangeSwitch(forkSwitch, 1, false);
+    //SwingLaunch
+        swingBrakeBlock.setLeaveModeMoveFwd();
+        swingBrakeBlock.selectFwdConditions();
+        swingBrakeBlock.addConditionBlockFree(show1Block);
+        //swingBrakeBlock.addConditionChangeSwitch(swingBrakeSwitch, 0, false);
 
-        //transferBoostBlock.selectFwdConditions();
-        //transferBoostBlock.addConditionBlockFree(storage1Block);
-        //transferBoostBlock.addConditionChangeSwitch(forkSwitch, 0, false);
-    //Lift1
-        lift1Block.setLeaveModeMoveFwd();
-        lift1Block.selectFwdConditions();
-        lift1Block.addConditionBlockFree(preLift2Block);
+    //Show1
+        show1Block.setLeaveModeMoveFwd();
+        show1Block.selectFwdConditions();
+        show1Block.addConditionBlockFree(show2Block);
 
-    //PreLift2
-        preLift2Block.setLeaveModeMoveFwd();
-        preLift2Block.selectFwdConditions();
-        preLift2Block.addConditionBlockFree(lift2Block);
-    //Lift1
-        lift2Block.setLeaveModeMoveFwd();
-        lift2Block.selectFwdConditions();
-        lift2Block.addConditionBlockFree(ready1Block);
+    //Show2
+        show2Block.setLeaveModeMoveFwd();
+        show2Block.selectFwdConditions();
+        show2Block.addConditionBlockFree(swingLaunchBlock);
+        show2Block.addConditionChangeSwitch(swingLaunchSwitch, 0, true);
 
-    //Ready1
-        ready1Block.setLeaveModeMoveFwd();
-        ready1Block.selectFwdConditions();
-        ready1Block.addConditionBlockFree(ready2Block);
-    //Ready2
-        ready2Block.setLeaveModeMoveFwd();
-        ready2Block.selectFwdConditions();
-        ready2Block.addConditionBlockFree(unloadBlock);
+    //SwingLaunch
+        swingLaunchBlock.setLeaveModeLaunchFwd();
+        swingLaunchBlock.selectFwdConditions();
+        swingLaunchBlock.addConditionBlockFree(finalBrakeBlock);
+        swingLaunchBlock.addConditionChangeSwitch(swingLaunchSwitch, 1, false);
+    
+    //FinalBrake
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(stationBlock);
 
-
+        /*
     //Storage1
         storage1Block.selectBwdConditions();
         storage1Block.addConditionBlockFree(transferBoostBlock);
@@ -87,7 +72,7 @@ public class PT_STRYKER extends Script{
     //Storage2
         storage2Block.selectBwdConditions();
         storage2Block.addConditionBlockFree(storage1Block);
-    /*
+
         storage1Block.selectFwdConditions();
         storage1Block.addConditionBlockFree(storage3Block);
 
