@@ -1,15 +1,20 @@
 import blockhelper.*;
 import com.nolimitscoaster.*;
- 
-public class HeartStopperScript extends Script{
+
+public class PT_STRYKER extends Script{
     private BlockHelperController blockHelperController;
 
     public bool onInit(){
         Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
         blockHelperController = new BlockHelperController(coaster);
 
-        BlockHelper loadBlock = blockHelperController.createStationBlock("LoadStation");
-        BlockHelper unloadBlock = blockHelperController.createBrakeBlock("UnloadStation");
+        BlockHelper stationBlock = blockHelperController.createStationBlock("Station");
+
+        BlockHelper swingBrakeBlock = blockHelperController.createBrakeBlock("SwingBrake");
+        BlockHelper swingLaunchBlock = blockHelperController.createBrakeBlock("SwingLaunch");
+
+        BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("FinalBrake");
+
 
         BlockHelper transferBoostBlock = blockHelperController.createBrakeBlock("TransferBoost");
         BlockHelper lift1Block = blockHelperController.createLiftBlock("Lift1");
@@ -20,11 +25,13 @@ public class HeartStopperScript extends Script{
         BlockHelper ready1Block = blockHelperController.createBrakeBlock("Ready1");
         BlockHelper ready2Block = blockHelperController.createBrakeBlock("Ready2");
 
-        BlockHelper storage1Block = blockHelperController.createStorageBlock("Storage1");
-        BlockHelper storage2Block = blockHelperController.createStorageBlock("Storage2");
+
+        //BlockHelper storage1Block = blockHelperController.createStorageBlock("Storage1");
+        //BlockHelper storage2Block = blockHelperController.createStorageBlock("Storage2");
         //BlockHelper storage3Block = blockHelperController.createStorageBlock("Storage3");
 
-        SpecialTrack forkSwitch = coaster.getSpecialTrack("Fork");
+        SpecialTrack swingBrakeSwitch = coaster.getSpecialTrack("SwingBrakeSwitch");  //Default 1/1
+        SpecialTrack swingLaunchSwitch = coaster.getSpecialTrack("SwingLaunchSwitch");    //Default 0/1
 
 
     //Unload

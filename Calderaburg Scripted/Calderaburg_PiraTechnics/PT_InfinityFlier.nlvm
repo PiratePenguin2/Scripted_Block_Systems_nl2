@@ -1,0 +1,38 @@
+import blockhelper.*;
+import com.nolimitscoaster.*;
+
+public class PT_InfinityFlier extends Script{
+    private BlockHelperController blockHelperController;
+
+    public bool onInit(){
+        Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
+        blockHelperController = new BlockHelperController(coaster);
+
+        BlockHelper stationBlock = blockHelperController.createStationBlock("Station");
+
+        BlockHelper liftBlock = blockHelperController.createLiftBlock("Lift");
+
+        BlockHelper finalBrakeBlock = blockHelperController.createBrakeBlock("FinalBrake");
+
+    //Load
+        stationBlock.setLeaveModeMoveFwd();
+        stationBlock.selectFwdConditions();
+        stationBlock.addConditionBlockFree(liftBlock);
+
+    //Lift
+        liftBlock.setLeaveModeMoveFwd();
+        liftBlock.selectFwdConditions();
+        liftBlock.addConditionBlockFree(finalBrakeBlock);
+
+    //Ready1
+        finalBrakeBlock.setLeaveModeMoveFwd();
+        finalBrakeBlock.selectFwdConditions();
+        finalBrakeBlock.addConditionBlockFree(stationBlock);
+
+        return true;
+    }
+
+    public void onNextFrame(float tick){
+        blockHelperController.process();
+    }
+}
