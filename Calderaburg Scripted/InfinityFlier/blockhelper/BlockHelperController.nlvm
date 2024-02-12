@@ -1,0 +1,165 @@
+package blockhelper;
+
+import com.nolimitscoaster.*;
+
+
+/**
+ * Helper class for simplifying implementation of block scripts
+ * It maintains the list of all blocks and also functions as a
+ * BlockHelper factory.
+ *
+ * Change log
+ * ---------------------------------
+ * 2017-05-18   Created
+ * 2019-01-07   Added check if the same block was created multiple times, which is now disallowed beause it may cause problems in the block controller handling.
+ */
+public class BlockHelperController implements com.nolimitscoaster.BlockSystemController
+{
+
+  /**
+   * Create a helper controller and assign it to a coaster.
+   */
+  public BlockHelperController(Coaster coaster)
+  {
+    _coaster = coaster;
+    // Assign the block system controller to the coaster
+    coaster.setBlockSystemController(this);
+    
+    _blocks = new nlvm.util.Vector();
+  }
+    
+  /**
+   * Create a block helper for an existing station block
+   * @param name The block name (as specified inside the Editor)
+   * @return Block helper object
+   */  
+  public BlockHelper createLiftBlock(String name)
+  {
+    checkIfAlreadyCreated(name);
+    BlockHelper block = BlockHelper.createLiftBlock(_coaster, name);
+    _blocks.addElement(block);
+    return block;
+  }
+  
+  public BlockHelper createStationBlock(String name)
+  {
+    checkIfAlreadyCreated(name);
+    BlockHelper block = BlockHelper.createStationBlock(_coaster, name);
+    _blocks.addElement(block);
+    return block;
+  }  
+  
+  public BlockHelper createBrakeBlock(String name)
+  {
+    checkIfAlreadyCreated(name);
+    BlockHelper block = BlockHelper.createBrakeBlock(_coaster, name);
+    _blocks.addElement(block);
+    return block;
+  }
+  
+  public BlockHelper createStorageBlock(String name)
+  {
+    checkIfAlreadyCreated(name);
+    BlockHelper block = BlockHelper.createStorageBlock(_coaster, name);
+    _blocks.addElement(block);
+    return block;
+  }
+  
+  /**
+   * Needs to be called from onNextFrame() of the coaster script
+   */
+  public void process()
+  {
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).process(); 
+    }
+  }  
+  
+  /**
+   * This method is part of the BlockSystemController interface
+   * Gets called when the Auto Block mode gets selected on the control panel.
+   */ 
+  public void onAutoMode(Coaster coaster)
+  {
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).onAutoMode(); 
+    }
+  }
+
+  /**
+   * This method is part of the BlockSystemController interface
+   * Gets called when the Manual Block gets selected on the control panel.
+   */   
+  public void onManualBlockMode(Coaster coaster)
+  {
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).onManualBlockMode(); 
+    }
+  }
+
+  /**
+   * This method is part of the BlockSystemController interface
+   * Gets called when the Full Manual mode gets selected on the control panel.
+   */ 
+  public void onFullManualMode(Coaster coaster)
+  {  
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).onFullManualMode(); 
+    }
+  }
+
+  /**
+   * This method is part of the BlockSystemController interface
+   * Gets called when the user clicks on the Advance Fwd Button on the control panel.
+   */  
+  public void onAdvanceFWDButton(Block block)
+  {
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).onAdvanceFWDButton(block); 
+    }
+  }
+  
+  /**
+   * This method is part of the BlockSystemController interface
+   * Gets called when the user clicks on the Advance Bwd Button on the control panel.
+   */
+  public void onAdvanceBWDButton(Block block)
+  {
+    int c = _blocks.size(); 
+    for (int i=0; i<c; ++i)
+    {
+      ((BlockHelper)_blocks.elementAt(i)).onAdvanceBWDButton(block); 
+    }
+  }
+  
+  private void checkIfAlreadyCreated(String blockName)
+  {
+    if (blockName != null)
+    {
+      int c = _blocks.size();
+      for (int i=0; i<c; ++i)
+      {
+        BlockHelper block = ((BlockHelper)_blocks.elementAt(i));
+        if (block.getBlockName().equals(blockName))
+        {
+          System.throwRuntimeException("A BlockHelper for block '" + blockName + "' was already created");
+        }
+      }
+    }
+  }
+  
+
+  private Coaster _coaster;
+  private nlvm.util.Vector _blocks;
+}
+
