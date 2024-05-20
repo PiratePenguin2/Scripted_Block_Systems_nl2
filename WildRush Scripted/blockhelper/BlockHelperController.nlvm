@@ -4,14 +4,14 @@ import com.nolimitscoaster.*;
 
 
 /**
- * Helper class for simplifying implementation of block scripts 
+ * Helper class for simplifying implementation of block scripts
  * It maintains the list of all blocks and also functions as a
  * BlockHelper factory.
  *
  * Change log
  * ---------------------------------
  * 2017-05-18   Created
- * 2019-01-07   Added check if the same block was created multiple times, which is now disallowed because it may cause problems in the block controller handling.
+ * 2019-01-07   Added check if the same block was created multiple times, which is now disallowed beause it may cause problems in the block controller handling.
  */
 public class BlockHelperController implements com.nolimitscoaster.BlockSystemController
 {
@@ -157,32 +157,9 @@ public class BlockHelperController implements com.nolimitscoaster.BlockSystemCon
       }
     }
   }
-  // Method to handle block freed event
-  public void blockFreed(String blockName, bool isLoadStation) {
-  // Update the fork switch state based on the freed block
-    for (int i = 0; i < _blocks.size(); ++i) {
-      BlockHelper block = (BlockHelper) _blocks.elementAt(i);
-      if (block.getBlockName().equals(blockName)) {
-        block.updateForkSwitchState(isLoadStation);
-        break;
-      }
-    }
-  }
-
-  /**
-   * Update the state of the fork switch based on the given condition.
-   * @param switchState The new state of the fork switch (true for left, false for right)
-   */
-  public void updateForkSwitchState(bool switchState) {
-    // Assuming forkSwitch is declared and is of type SpecialTrack
-    if (switchState) {
-      // Setting the state based on the SpecialTrack enum values
-      forkSwitch.setSwitchDirection(SpecialTrack.LEFT.getValue());
-    } else {
-      forkSwitch.setSwitchDirection(SpecialTrack.RIGHT.getValue());
-    }
-  }
+  
 
   private Coaster _coaster;
   private nlvm.util.Vector _blocks;
 }
+

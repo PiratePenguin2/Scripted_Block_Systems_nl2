@@ -1,0 +1,113 @@
+import blockhelper.*;
+import com.nolimitscoaster.*;
+ 
+public class WildRushBlocks extends Script{
+    private BlockHelperController blockHelperController;
+
+    public bool onInit(){
+        Coaster coaster = sim.getCoasterForEntityId(getParentEntityId());
+        blockHelperController = new BlockHelperController(coaster);
+
+        BlockHelper unloadBlock = blockHelperController.createStationBlock("Unload");
+        BlockHelper loadBlock = blockHelperController.createStationBlock("Load");
+
+        BlockHelper liftBlock = blockHelperController.createLiftBlock("Lift");
+
+        BlockHelper boostABlock = blockHelperController.createBrakeBlock("BoostA");
+        BlockHelper preliftBBlock = blockHelperController.createBrakeBlock("PreliftB");
+
+        BlockHelper boostBBlock = blockHelperController.createBrakeBlock("BoostB");
+        BlockHelper fbrBlock = blockHelperController.createBrakeBlock("FBR");
+        BlockHelper transferBlock = blockHelperController.createBrakeBlock("Transfer");
+
+        BlockHelper storageABlock = blockHelperController.createStorageBlock("StorageA");
+        BlockHelper storageBBlock = blockHelperController.createStorageBlock("StorageB");
+        BlockHelper storageCBlock = blockHelperController.createStorageBlock("StorageC");
+        BlockHelper storageDBlock = blockHelperController.createStorageBlock("StorageD");
+
+        SpecialTrack transferSwitch = coaster.getSpecialTrack("TransferTable");
+        SpecialTrack mergeSwitch = coaster.getSpecialTrack("Merge");
+        SpecialTrack forkSwitch = coaster.getSpecialTrack("Fork");
+
+    //Unload
+        unloadBlock.setLeaveModeMoveFwd();
+        unloadBlock.selectFwdConditions();
+        unloadBlock.addConditionBlockFree(loadBlock);
+    
+    //Load
+        loadBlock.setLeaveModeMoveFwd();
+        loadBlock.selectFwdConditions();
+        loadBlock.addConditionBlockFree(liftBlock);
+        liftBlock.addConditionChangeSwitch(mergeSwitch, 1, false);
+        
+
+    //Lift
+        liftBlock.setLeaveModeMoveFwd();
+        liftBlock.selectFwdConditions();
+        liftBlock.addConditionBlockFree(boostABlock);
+        //liftBlock.addConditionChangeSwitch(forkSwitch, 0, false);
+
+        liftBlock.selectFwdConditions();
+        liftBlock.addConditionBlockFree(boostBBlock);
+        liftBlock.addConditionChangeSwitch(forkSwitch, 1, false);
+    
+
+    //BoostA
+        boostABlock.setLeaveModeMoveFwd();
+        boostABlock.selectFwdConditions();
+        boostABlock.addConditionBlockFree(preliftBBlock);
+    
+    //PreliftB
+        preliftBBlock.setLeaveModeMoveFwd();
+        preliftBBlock.selectFwdConditions();
+        preliftBBlock.addConditionBlockFree(liftBlock);
+        preliftBBlock.addConditionChangeSwitch(mergeSwitch, 0, false);
+
+
+
+    //BoostB
+        boostBBlock.setLeaveModeMoveFwd();
+        boostBBlock.selectFwdConditions();
+        boostBBlock.addConditionBlockFree(fbrBlock);
+
+    //FBR
+        fbrBlock.setLeaveModeMoveFwd();
+        fbrBlock.selectFwdConditions();
+        fbrBlock.addConditionBlockFree(transferBlock);
+        fbrBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+
+    //Transfer
+        transferBlock.setLeaveModeMoveFwd();
+        transferBlock.selectFwdConditions();
+        transferBlock.addConditionBlockFree(unloadBlock);
+        transferBlock.addConditionChangeSwitch(transferSwitch, 2, false);
+
+
+
+    //StorageA
+        storageABlock.selectFwdConditions();
+        storageABlock.addConditionBlockFree(transferBlock);
+        storageABlock.addConditionChangeSwitch(transferSwitch, 4, false);
+
+    //StorageB
+        storageBBlock.selectFwdConditions();
+        storageBBlock.addConditionBlockFree(transferBlock);
+        storageBBlock.addConditionChangeSwitch(transferSwitch, 3, false);
+
+    //StorageC
+        storageCBlock.selectFwdConditions();
+        storageCBlock.addConditionBlockFree(transferBlock);
+        storageCBlock.addConditionChangeSwitch(transferSwitch, 1, false);
+
+    //StorageD
+        storageDBlock.selectFwdConditions();
+        storageDBlock.addConditionBlockFree(transferBlock);
+        storageDBlock.addConditionChangeSwitch(transferSwitch, 0, false);
+
+        return true;
+    }
+
+    public void onNextFrame(float tick){
+        blockHelperController.process();
+    }
+}

@@ -8,22 +8,46 @@ import com.nolimitscoaster.*;
  */
 public class BlockHelperCondition
 {
+  private SpecialTrack forkSwitch;
+  private SpecialTrack mergeSwitch;
+
   //private int mergeSwitchState = (int) mergeSwitch.getSpecialTrack();
 
   private int forkSwitchState = (int) forkSwitch.getSpecialTrack();
   //private int forkSwitchCondition = 
 
-  BlockHelperCondition(int type, Object object, double param, bool canPrepare)
-  {
+    // Constructor for Block condition
+    BlockHelperCondition(int type, com.nolimitscoaster.Block object, int param, bool canPrepare) {
+      _type = type;
+      _object = object;
+      _param = param;
+      _canPrepare = canPrepare;
+    }
+
+  // Constructor for SpecialTrack condition
+  BlockHelperCondition(int type, com.nolimitscoaster.SpecialTrack object, int param, bool canPrepare) {
+      _type = type;
+      _object = object;
+      _param = param;
+      _canPrepare = canPrepare;
+    }
+
+  // Constructor for null condition with float param
+  BlockHelperCondition(int type, Object object, float param, bool canPrepare) {
     _type = type;
     _object = object;
     _param = param;
     _canPrepare = canPrepare;
-    forkSwitchState = (int) forkSwitch.getSpecialTrack();
   }
   
-  bool isTrue(bool prepare, bool activeSwitch)
-  {
+  bool isTrue(bool prepare, bool activeSwitch) {
+    // Use forkSwitch and mergeSwitch as needed
+    // Correct the method call to get the state of forkSwitch
+    if (forkSwitch != null) {
+      // Assuming getState() returns the state of the switch
+      forkSwitchState = (int) forkSwitch.getState();
+    }
+
     switch (_type)
     {
     case CONDITION_BLOCK_FREE:
@@ -58,7 +82,7 @@ public class BlockHelperCondition
     return false;
   }
   
-  void acknoledge(bool backwards)
+  void acknowledge(bool backwards)
   {
     switch (_type)
     {
@@ -84,6 +108,34 @@ public class BlockHelperCondition
     }
     return null;
   }
+
+  // Method to set the state of the fork switch when a block is freed
+  public void setForkSwitchState(int state) {
+    forkSwitchState = state;
+  }
+
+  // Method to control the fork switch state based on block frees
+  public void updateForkSwitchState(bool freedBlockIsLoadStation) {
+    if (freedBlockIsLoadStation) {
+      forkSwitchState = 1; // Align with load station
+    } else {
+      forkSwitchState = 0; // Align with unload station
+    }
+  }
+
+  // Method to handle merge switch behavior when multiple stations are ready to dispatch
+  public void handleMergeSwitch(bool isReadyToDispatch) {
+    if (isReadyToDispatch && forkSwitchState != -1) {
+      // Set the direction of the merge switch based on the readiness of the stations
+      if (forkSwitchState == 0) {
+        // Align the merge switch to the left if the left station is ready to dispatch
+        mergeSwitch.setSwitchDirection(0);
+      } else {
+        // Align the merge switch to the right if the right station is ready to dispatch
+        mergeSwitch.setSwitchDirection(1);
+      }
+    }
+  }
   
   static final int CONDITION_BLOCK_FREE = 0;
   static final int CONDITION_CHANGE_SWITCH = 1;
@@ -100,4 +152,3 @@ public class BlockHelperCondition
   
   private double _sumTime;
 }
-

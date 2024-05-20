@@ -1044,7 +1044,7 @@ public class BlockHelper
 
   static final int STATE_BLOCK_LAUNCHING_FWD = 12;
   static final int STATE_BLOCK_LAUNCHING_BWD = 13;
-  static final int STATE_BLOCK_LAUNCHING_NEUT = 14;
+  static final int STATE_BLOCK_LAUNCHING_NEUTRAL = 14;
 
   // The coaster operation mode  
   private static final int MODE_AUTO = 0;

@@ -390,7 +390,7 @@ public class BlockHelper
         {
           if (processNextBlockEntering())
           {
-            acknowledgeNextBlockEnteringInAutoMode();
+            acknoledgeNextBlockEnteringInAutoMode();
             
             _block.setState(isBackwardsLeaveInAutoMode() ? STATE_BLOCK_LEAVING_BWD : STATE_BLOCK_LEAVING);
             _block.getSection().setStationLeaving();
@@ -416,7 +416,7 @@ public class BlockHelper
         if (_leaveMode == LEAVE_MODE_LAUNCH_FWD)
         {
           _block.getSection().setTransportsLaunchFwdOn();
-          _block.getSection().setBrakesOff();
+          
         }
         else
         {
@@ -529,7 +529,7 @@ public class BlockHelper
         {
           if (_mode == MODE_AUTO)
           {
-            acknowledgeNextBlockEnteringInAutoMode();
+            acknoledgeNextBlockEnteringInAutoMode();
             
             _block.setState(STATE_BLOCK_LEAVING);
           }
@@ -618,7 +618,7 @@ public class BlockHelper
       {
         if (processNextBlockEntering())
         {
-          acknowledgeNextBlockEnteringInAutoMode();
+          acknoledgeNextBlockEnteringInAutoMode();
           
           _block.setState(isBackwardsLeaveInAutoMode() ? STATE_BLOCK_LEAVING_BWD : STATE_BLOCK_LEAVING);
         }
@@ -733,7 +733,6 @@ public class BlockHelper
       _block.getSection().setTransportsStandardFwdOn();
       if (_block.getSection().isTrainBehindCenterOfSection())
       {
-        _block.getSection().getTrainOnSection().setLashedToTrack(true);
         _block.setState(STATE_BLOCK_WAIT_FOR_CLEAR);
       }
       break;
@@ -779,9 +778,12 @@ public class BlockHelper
     }      
   }
   
-  private void addLeaveCondition(BlockHelperCondition cond) {
-    if (_selectConditionsBwd) {
-      if (_bwdConditions == null) {
+  private void addLeaveCondition(BlockHelperCondition cond)
+  {
+    if (_selectConditionsBwd)
+    {
+      if (_bwdConditions == null)
+      {
         _bwdConditions = new nlvm.util.Vector(); 
         _block.setAdvanceBwdVisible(true);
       }
@@ -854,12 +856,12 @@ public class BlockHelper
     return false;
   }
   
-  private void acknowledgeNextBlockEnteringInAutoMode()
+  private void acknoledgeNextBlockEnteringInAutoMode()
   {
     if (_mode == MODE_AUTO)
     {
       bool backwards = isBackwardsLeaveInAutoMode();
-      acknowledgeNextBlock(backwards ? _bwdConditions : _fwdConditions, backwards);
+      acknoledgeNextBlock(backwards ? _bwdConditions : _fwdConditions, backwards);
     }
   }
   
@@ -888,7 +890,7 @@ public class BlockHelper
     return ret;    
   }
   
-  private void acknowledgeNextBlock(nlvm.util.Vector conditions, bool backwards)
+  private void acknoledgeNextBlock(nlvm.util.Vector conditions, bool backwards)
   {
     if (conditions != null)
     {
@@ -896,7 +898,7 @@ public class BlockHelper
       for (int i=0; i<c; ++i)
       {
         BlockHelperCondition cond = (BlockHelperCondition)conditions.elementAt(i);
-        cond.acknowledge(backwards);
+        cond.acknoledge(backwards);
       }
     }
   }
