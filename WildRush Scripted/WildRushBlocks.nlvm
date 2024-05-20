@@ -38,14 +38,14 @@ public class WildRushBlocks extends Script{
         loadBlock.setLeaveModeMoveFwd();
         loadBlock.selectFwdConditions();
         loadBlock.addConditionBlockFree(liftBlock);
-        liftBlock.addConditionChangeSwitch(mergeSwitch, 1, false);
+        loadBlock.addConditionChangeSwitch(mergeSwitch, 1, false);
         
 
     //Lift
         liftBlock.setLeaveModeMoveFwd();
-        liftBlock.selectFwdConditions();
+        /*liftBlock.selectFwdConditions();
         liftBlock.addConditionBlockFree(boostABlock);
-        //liftBlock.addConditionChangeSwitch(forkSwitch, 0, false);
+        liftBlock.addConditionChangeSwitch(forkSwitch, 0, false);*/
 
         liftBlock.selectFwdConditions();
         liftBlock.addConditionBlockFree(boostBBlock);
